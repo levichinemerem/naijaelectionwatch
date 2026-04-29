@@ -10,6 +10,9 @@ const jetbrainsMono = JetBrains_Mono({ subsets:["latin"], variable:"--font-jetbr
 export const metadata: Metadata = {
   title: "Naija Election Watch — Tracking Democracy",
   description: "Nigeria's most advanced election intelligence platform",
+  verification: {
+    google: "PfmV-qk0BCQMrzUXuoiI72kebdmUrPVwlJZlXgAhWQmI",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
