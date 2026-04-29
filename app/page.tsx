@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import NewsletterForm from "@/app/components/NewsletterForm";
 
 const C = {
   bg:       "#0a0f0a",
@@ -15,6 +16,12 @@ const C = {
   white:    "#f0f4f0",
   muted:    "rgba(240,244,240,0.5)",
   faint:    "rgba(240,244,240,0.2)",
+};
+
+const F = {
+  body:    "'Inter', sans-serif",
+  display: "'Space Grotesk', sans-serif",
+  mono:    "'JetBrains Mono', monospace",
 };
 
 const BREAKING = [
@@ -487,32 +494,20 @@ function EducationHub() {
 }
 
 function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
   return (
     <section style={{ background:C.bg, padding:"80px 5vw", borderTop:`0.5px solid ${C.border}`, position:"relative", overflow:"hidden" }}>
       <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:"50vw", height:"30vw", borderRadius:"50%", background:`radial-gradient(ellipse,rgba(0,220,130,0.06) 0%,transparent 70%)`, pointerEvents:"none" }} />
       <div style={{ maxWidth:600, margin:"0 auto", textAlign:"center", position:"relative" }}>
-        <div className="font-mono" style={{ fontSize:11, color:C.green, letterSpacing:2, marginBottom:14 }}>STAY INFORMED</div>
-        <h2 className="font-display" style={{ fontSize:"clamp(24px,4vw,42px)", fontWeight:900, color:C.white, margin:"0 0 16px", letterSpacing:-1 }}>Stay Ahead of the Election Curve</h2>
+        <div style={{ fontFamily:F.mono, fontSize:11, color:C.green, letterSpacing:2, marginBottom:14 }}>STAY INFORMED</div>
+        <h2 style={{ fontFamily:F.display, fontSize:"clamp(24px,4vw,42px)", fontWeight:900, color:C.white, margin:"0 0 16px", letterSpacing:-1 }}>Stay Ahead of the Election Curve</h2>
         <p style={{ fontSize:15, color:C.muted, margin:"0 0 36px", lineHeight:1.7 }}>Real-time alerts, in-depth analysis, and important updates delivered straight to your inbox.</p>
-        {done ? (
-          <div className="font-mono" style={{ fontSize:16, color:C.green, fontWeight:700 }}>✓ You're in. Welcome to the watch. 🇳🇬</div>
-        ) : (
-          <div className="nl-row" style={{ display:"flex", gap:10, maxWidth:460, margin:"0 auto" }}>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email address"
-              style={{ flex:1, background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:8, padding:"12px 16px", color:C.white, fontSize:14, outline:"none", minWidth:0 }} />
-            <button onClick={() => email && setDone(true)} className="font-display"
-              style={{ background:C.green, border:"none", color:"#061006", padding:"12px 20px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
-              Get Alerts
-            </button>
-          </div>
-        )}
+        <div style={{ maxWidth:460, margin:"0 auto" }}>
+          <NewsletterForm />
+        </div>
       </div>
     </section>
   );
 }
-
 function Footer() {
   return (
     <footer style={{ background:"#060a06", padding:"64px 5vw 32px", borderTop:`0.5px solid ${C.border}` }}>
