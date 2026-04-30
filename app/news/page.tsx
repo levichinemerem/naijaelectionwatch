@@ -83,7 +83,7 @@ function NavBar() {
           </div>
         </Link>
         <div className="nav-links" style={{ display:"flex", gap:2, flex:1 }}>
-          {["Home","News","Education","About Us"].map((item,i) => (
+          {["Home","News","Education","About"].map((item,i) => (
             <Link key={item} href={i===0?"/":`/${item.toLowerCase().replace(" ","")}`} style={{ fontFamily:F.body, fontSize:13, color: item==="News" ? C.green : C.muted, padding:"5px 12px", borderRadius:5, textDecoration:"none", borderBottom: item==="News" ? `2px solid ${C.green}` : "2px solid transparent" }}>{item}</Link>
           ))}
         </div>

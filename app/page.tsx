@@ -65,7 +65,12 @@ function NavBar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const navLinks = ["Home","News","Education","About Us"];
+  const navLinks = [
+    { label:"Home",      href:"/" },
+    { label:"News",      href:"/news" },
+    { label:"Education", href:"/education" },
+    { label:"About Us",  href:"/about" },
+  ];
 
   return (
     <>
@@ -113,8 +118,8 @@ function NavBar() {
           <div className="nav-links-desktop" style={{ display:"flex", gap:4, flex:1, alignItems:"center" }}>
             {navLinks.map((item,i) => (
               <a 
-                key={item} 
-                href="#" 
+                key={item.label} 
+                href={item.href} 
                 className="font-mono"
                 style={{ 
                   color: i===0 ? C.green : C.muted, 
@@ -129,7 +134,7 @@ function NavBar() {
                 onMouseEnter={e => { if(i!==0) e.currentTarget.style.color = C.white; }}
                 onMouseLeave={e => { if(i!==0) e.currentTarget.style.color = C.muted; }}
               >
-                {item}
+                {item.label}
               </a>
             ))}
           </div>
@@ -248,8 +253,8 @@ function NavBar() {
         <div style={{ display:"flex", flexDirection:"column", gap:4, flex:1 }}>
           {navLinks.map((item,i) => (
             <a 
-              key={item} 
-              href="#" 
+              key={item.label} 
+              href={item.href} 
               className="font-mono"
               onClick={() => setMenuOpen(false)}
               style={{ 
@@ -264,7 +269,7 @@ function NavBar() {
                 transition:"all 0.2s"
               }}
             >
-              {item}
+              {item.label}
             </a>
           ))}
         </div>
@@ -472,7 +477,7 @@ function EducationHub() {
             <div className="font-mono" style={{ fontSize:11, color:C.green, letterSpacing:2, marginBottom:6 }}>EDUCATION HUB</div>
             <h2 className="font-display" style={{ fontSize:22, fontWeight:700, color:C.white, margin:0 }}>Learn. Understand. Participate.</h2>
           </div>
-          <a href="#" className="font-mono" style={{ fontSize:13, color:C.green, textDecoration:"none" }}>View All Articles →</a>
+          <a href="/education" className="font-mono" style={{ fontSize:13, color:C.green, textDecoration:"none" }}>View All Articles →</a>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:16 }}>
           {EDUCATION.map(item => (
