@@ -4,13 +4,46 @@
 
 @layer base {
   :root {
+    /* ── Fonts ── */
     --font-inter: 'Inter', sans-serif;
     --font-space-grotesk: 'Space Grotesk', sans-serif;
     --font-jetbrains-mono: 'JetBrains Mono', monospace;
+
+    /* ── Brand Colours ── */
+    --color-brand-dark:      #1B4332;
+    --color-brand-medium:    #2D6A4F;
+    --color-brand-light:     #D8F3DC;
+    --color-brand-tint:      #F0FAF4;
+
+    /* ── UI Colours ── */
+    --color-bg:              #FFFFFF;
+    --color-bg-card:         #FFFFFF;
+    --color-bg-footer:       #1B4332;
+    --color-border:          #E5E7EB;
+    --color-divider:         #E8E8E8;
+
+    /* ── Text Colours ── */
+    --color-text-primary:    #111827;
+    --color-text-secondary:  #6B7280;
+    --color-text-muted:      #9CA3AF;
+    --color-text-inverse:    #FFFFFF;
+
+    /* ── Spacing & Shape ── */
+    --radius-card:           10px;
+    --radius-pill:           999px;
+    --radius-btn:            8px;
+    --shadow-card:           0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-card-hover:     0 8px 32px rgba(0, 0, 0, 0.13);
+
+    /* ── Transitions ── */
+    --transition-fast:       200ms ease;
+    --transition-menu:       250ms ease;
   }
 
   body {
     font-family: var(--font-inter);
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -19,18 +52,100 @@
   .font-display {
     font-family: var(--font-space-grotesk);
   }
-
   .font-mono {
     font-family: var(--font-jetbrains-mono);
   }
 
-  /* Input placeholder color */
+  /* Input placeholder */
   input::placeholder {
-    color: rgba(240, 244, 240, 0.3);
+    color: var(--color-text-muted);
   }
 
   /* Button active state */
   button:active {
     transform: scale(0.97);
+  }
+
+  /* ── Reusable component classes ── */
+
+  /* Category pill (e.g. ECONOMY, POLITICS) */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-brand-light);
+    color: var(--color-brand-dark);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  /* News card */
+  .news-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  }
+  .news-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Section label (e.g. "LEAD STORY", "LATEST INTELLIGENCE") */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+  }
+
+  /* Primary CTA button */
+  .btn-primary {
+    background-color: var(--color-brand-dark);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-btn);
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color var(--transition-fast);
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-brand-medium);
+  }
+
+  /* Outlined button (e.g. "Load More") */
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-brand-dark);
+    border: 1.5px solid var(--color-brand-dark);
+    border-radius: var(--radius-btn);
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    cursor: pointer;
+  }
+  .btn-outline:hover {
+    background-color: var(--color-brand-dark);
+    color: var(--color-text-inverse);
+  }
+
+  /* Byline / meta row */
+  .byline {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Timestamp */
+  .timestamp {
+    font-size: 12px;
+    color: var(--color-text-muted);
   }
 }
