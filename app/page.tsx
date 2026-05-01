@@ -2,28 +2,38 @@
 import { useState, useEffect, useRef } from "react";
 import NewsletterForm from "@/app/components/NewsletterForm";
 
+/* ─── DESIGN SYSTEM ─── */
 const C = {
-  bg:       "#0a0f0a",
-  bg2:      "#0f1a0f",
-  bg3:      "#111e11",
-  bgNav:    "rgba(10,15,10,0.98)",
-  border:   "rgba(0,220,130,0.12)",
-  borderHi: "rgba(0,220,130,0.3)",
-  green:    "#00dc82",
-  greenDim: "rgba(0,220,130,0.1)",
-  amber:    "#f59e0b",
-  red:      "#ef4444",
-  white:    "#f0f4f0",
-  muted:    "rgba(240,244,240,0.5)",
-  faint:    "rgba(240,244,240,0.2)",
+  // Brand Greens
+  brandDark:   "#1B4332",
+  brandMedium: "#2D6A4F",
+  mint:        "#D8F3DC",
+  mintText:    "#1B4332",
+  // Neutrals
+  pageBg:      "#FFFFFF",
+  cardBg:      "#FFFFFF",
+  cardBorder:  "#E8E8E8",
+  divider:     "#E5E7EB",
+  // Text
+  body:        "#111827",
+  secondary:   "#6B7280",
+  tertiary:    "#9CA3AF",
+  white:       "#FFFFFF",
+  white70:     "rgba(255,255,255,0.7)",
+  // Accent
+  red:         "#ef4444",
+  amber:       "#f59e0b",
+  // Newsletter
+  newsletterBg:"#F0FAF4",
 };
 
 const F = {
-  body:    "'Inter', sans-serif",
-  display: "'Space Grotesk', sans-serif",
+  body:    "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  display: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   mono:    "'JetBrains Mono', monospace",
 };
 
+/* ─── DATA (unchanged) ─── */
 const BREAKING = [
   "INEC releases new voter distribution data across 36 states",
   "Supreme Court dismisses suit on candidate eligibility",
@@ -47,9 +57,21 @@ const EDUCATION = [
   { label:"KEY TERMS",     title:"Key Electoral Terms Explained",      desc:"Essential glossary every Nigerian voter should know before 2027.", icon:"📖" },
 ];
 
-function Tag({ text, color = C.green }: { text: string; color?: string }) {
+/* ─── COMPONENTS ─── */
+
+function Pill({ text }: { text: string }) {
   return (
-    <span className="font-mono" style={{ fontSize:10, fontWeight:700, letterSpacing:1.2, color, border:`0.5px solid ${color}`, background:`${color}1a`, padding:"2px 9px", borderRadius:3 }}>
+    <span style={{
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: "0.08em",
+      textTransform: "uppercase" as const,
+      color: C.mintText,
+      background: C.mint,
+      padding: "3px 10px",
+      borderRadius: 999,
+      display: "inline-block",
+    }}>
       {text}
     </span>
   );
@@ -74,65 +96,58 @@ function NavBar() {
 
   return (
     <>
-      <nav style={{ 
-        position:"fixed", 
-        inset:"0 0 auto 0", 
-        zIndex:200, 
-        background: solid ? C.bgNav : "rgba(10,15,10,0.85)", 
+      <nav style={{
+        position: "fixed",
+        inset: "0 0 auto 0",
+        zIndex: 200,
+        background: solid ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.95)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderBottom: `0.5px solid ${C.border}`, 
-        transition:"all 0.25s", 
-        padding:"0 5vw" 
+        borderBottom: `1px solid ${C.divider}`,
+        transition: "all 0.25s",
+        padding: "0 5vw",
       }}>
-        <div style={{ maxWidth:1280, margin:"0 auto", display:"flex", alignItems:"center", height:72, gap:8 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
           {/* Logo */}
-          <a href="/" style={{ display:"flex", alignItems:"center", gap:12, textDecoration:"none", flexShrink:0, marginRight:24 }}>
-            <div style={{ 
-              width:42, 
-              height:42, 
-              borderRadius:10, 
-              background: `linear-gradient(135deg, ${C.green}20, ${C.green}10)`,
-              border:`1.5px solid ${C.green}`, 
-              display:"flex", 
-              alignItems:"center", 
-              justifyContent:"center",
-              boxShadow: `0 0 20px ${C.greenDim}`
+          <a href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", flexShrink: 0, marginRight: 24 }}>
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              background: C.brandDark,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m9 12 2 2 4-4"/>
                 <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
-                <path d="M12 2v3"/>
-                <path d="M12 19v3"/>
-                <path d="M19 12h3"/>
-                <path d="M2 12h3"/>
               </svg>
             </div>
-            <div style={{ lineHeight:1.2 }}>
-              <div className="font-display" style={{ fontSize:15, fontWeight:700, color:C.white, letterSpacing:0.5 }}>Naija Election Watch</div>
-              <div className="font-mono" style={{ fontSize:9, color:C.muted, letterSpacing:1.8, marginTop:2 }}>TRACKING DEMOCRACY · 2027</div>
+            <div style={{ lineHeight: 1.2 }}>
+              <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.3 }}>Naija Election Watch</div>
             </div>
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="nav-links-desktop" style={{ display:"flex", gap:4, flex:1, alignItems:"center" }}>
-            {navLinks.map((item,i) => (
-              <a 
-                key={item.label} 
-                href={item.href} 
-                className="font-mono"
-                style={{ 
-                  color: i===0 ? C.green : C.muted, 
-                  fontSize:12, 
-                  padding:"8px 16px", 
-                  borderRadius:6, 
-                  textDecoration:"none", 
-                  letterSpacing:0.5,
-                  transition:"all 0.2s",
-                  background: i===0 ? `${C.green}15` : "transparent",
+          <div className="nav-links-desktop" style={{ display: "flex", gap: 4, flex: 1, alignItems: "center" }}>
+            {navLinks.map((item, i) => (
+              <a
+                key={item.label}
+                href={item.href}
+                style={{
+                  color: i === 0 ? C.brandMedium : C.body,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  padding: "8px 16px",
+                  borderRadius: 6,
+                  textDecoration: "none",
+                  letterSpacing: 0.2,
+                  transition: "all 0.2s",
+                  borderBottom: i === 0 ? `2px solid ${C.brandMedium}` : "2px solid transparent",
                 }}
-                onMouseEnter={e => { if(i!==0) e.currentTarget.style.color = C.white; }}
-                onMouseLeave={e => { if(i!==0) e.currentTarget.style.color = C.muted; }}
+                onMouseEnter={e => { if (i !== 0) e.currentTarget.style.color = C.brandMedium; }}
+                onMouseLeave={e => { if (i !== 0) e.currentTarget.style.color = C.body; }}
               >
                 {item.label}
               </a>
@@ -140,29 +155,42 @@ function NavBar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="nav-cta-desktop" style={{ display:"flex", gap:10, marginLeft:"auto", alignItems:"center" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", borderRadius:20, background:`${C.green}10`, border:`0.5px solid ${C.border}` }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:C.green, boxShadow:`0 0 8px ${C.green}` }}></span>
-              <span className="font-mono" style={{ fontSize:10, color:C.green, letterSpacing:1 }}>LIVE</span>
-            </div>
-            <button className="font-display" style={{ background:C.green, border:"none", color:"#061006", padding:"10px 20px", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", letterSpacing:0.3 }}>
+          <div className="nav-cta-desktop" style={{ display: "flex", gap: 10, marginLeft: "auto", alignItems: "center" }}>
+            <button style={{
+              background: C.brandDark,
+              border: "none",
+              color: C.white,
+              padding: "10px 20px",
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: 0.3,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}>
               Get Alerts
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
             </button>
           </div>
 
           {/* Mobile Hamburger */}
-          <button 
+          <button
             className="nav-hamburger"
             onClick={() => setMenuOpen(!menuOpen)}
-            style={{ 
-              display:"none", 
-              background:"transparent", 
-              border:`0.5px solid ${C.border}`, 
-              color:C.white, 
-              padding:"10px", 
-              borderRadius:8, 
-              cursor:"pointer",
-              marginLeft:"auto"
+            style={{
+              display: "none",
+              background: "transparent",
+              border: `1px solid ${C.divider}`,
+              color: C.body,
+              padding: "10px",
+              borderRadius: 8,
+              cursor: "pointer",
+              marginLeft: "auto",
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -184,40 +212,38 @@ function NavBar() {
       </nav>
 
       {/* Mobile Side Panel */}
-      <div 
+      <div
         className="mobile-panel"
         style={{
-          position:"fixed",
-          top:0,
-          right:0,
-          bottom:0,
-          width:"280px",
-          background:C.bgNav,
-          backdropFilter:"blur(30px)",
-          WebkitBackdropFilter:"blur(30px)",
-          borderLeft:`0.5px solid ${C.border}`,
-          zIndex:300,
+          position: "fixed",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: "280px",
+          background: C.pageBg,
+          borderLeft: `1px solid ${C.divider}`,
+          zIndex: 300,
           transform: menuOpen ? "translateX(0)" : "translateX(100%)",
-          transition:"transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-          display:"flex",
-          flexDirection:"column",
-          padding:"24px",
-          paddingTop:"90px"
+          transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          display: "flex",
+          flexDirection: "column",
+          padding: "24px",
+          paddingTop: "80px",
         }}
       >
-        {/* Close button */}
-        <button 
+        <button
           onClick={() => setMenuOpen(false)}
           style={{
-            position:"absolute",
-            top:24,
-            right:24,
-            background:"transparent",
-            border:`0.5px solid ${C.border}`,
-            color:C.white,
-            padding:"8px",
-            borderRadius:8,
-            cursor:"pointer"
+            position: "absolute",
+            top: 20,
+            right: 20,
+            background: "transparent",
+            border: "none",
+            color: C.body,
+            padding: "8px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontSize: 14,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -226,47 +252,24 @@ function NavBar() {
           </svg>
         </button>
 
-        {/* Mobile Logo */}
-        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:40 }}>
-          <div style={{ 
-            width:36, 
-            height:36, 
-            borderRadius:8, 
-            background: `linear-gradient(135deg, ${C.green}20, ${C.green}10)`,
-            border:`1.5px solid ${C.green}`, 
-            display:"flex", 
-            alignItems:"center", 
-            justifyContent:"center" 
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 12 2 2 4-4"/>
-              <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
-            </svg>
-          </div>
-          <div>
-            <div className="font-display" style={{ fontSize:13, fontWeight:700, color:C.white }}>Naija Election Watch</div>
-            <div className="font-mono" style={{ fontSize:8, color:C.muted, letterSpacing:1.5 }}>TRACKING DEMOCRACY</div>
-          </div>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.secondary, marginBottom: 24, textTransform: "uppercase" }}>
+          Menu
         </div>
 
-        {/* Mobile Links */}
-        <div style={{ display:"flex", flexDirection:"column", gap:4, flex:1 }}>
-          {navLinks.map((item,i) => (
-            <a 
-              key={item.label} 
-              href={item.href} 
-              className="font-mono"
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+          {navLinks.map((item, i) => (
+            <a
+              key={item.label}
+              href={item.href}
               onClick={() => setMenuOpen(false)}
-              style={{ 
-                color: i===0 ? C.green : C.white, 
-                fontSize:13, 
-                padding:"14px 16px", 
-                borderRadius:8, 
-                textDecoration:"none", 
-                letterSpacing:0.5,
-                background: i===0 ? `${C.green}15` : "transparent",
-                borderLeft: i===0 ? `2px solid ${C.green}` : "2px solid transparent",
-                transition:"all 0.2s"
+              style={{
+                color: i === 0 ? C.brandMedium : C.body,
+                fontSize: 18,
+                fontWeight: i === 0 ? 600 : 400,
+                padding: "14px 0",
+                textDecoration: "none",
+                borderBottom: `1px solid ${C.divider}`,
+                transition: "all 0.2s",
               }}
             >
               {item.label}
@@ -274,43 +277,42 @@ function NavBar() {
           ))}
         </div>
 
-        {/* Mobile CTA */}
-        <div style={{ marginTop:"auto", paddingTop:24, borderTop:`0.5px solid ${C.border}` }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
-            <span style={{ width:6, height:6, borderRadius:"50%", background:C.green, boxShadow:`0 0 8px ${C.green}` }}></span>
-            <span className="font-mono" style={{ fontSize:10, color:C.green, letterSpacing:1 }}>LIVE TRACKING ACTIVE</span>
-          </div>
-          <button 
-            className="font-display" 
-            style={{ 
-              background:C.green, 
-              border:"none", 
-              color:"#061006", 
-              padding:"14px", 
-              borderRadius:8, 
-              fontSize:14, 
-              fontWeight:700, 
-              cursor:"pointer", 
-              width:"100%",
-              letterSpacing:0.3
-            }}
-          >
+        <div style={{ marginTop: "auto", paddingTop: 24, borderTop: `1px solid ${C.divider}` }}>
+          <button style={{
+            background: C.brandDark,
+            border: "none",
+            color: C.white,
+            padding: "14px",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: "pointer",
+            width: "100%",
+            letterSpacing: 0.3,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}>
             Get Alerts
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            </svg>
           </button>
         </div>
       </div>
 
-      {/* Overlay */}
       {menuOpen && (
-        <div 
+        <div
           onClick={() => setMenuOpen(false)}
           style={{
-            position:"fixed",
-            inset:0,
-            background:"rgba(0,0,0,0.6)",
-            backdropFilter:"blur(4px)",
-            zIndex:250,
-            animation:"fadeIn 0.3s ease"
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(4px)",
+            zIndex: 250,
+            animation: "fadeIn 0.3s ease",
           }}
         />
       )}
@@ -332,31 +334,87 @@ function Hero() {
     requestAnimationFrame(tick);
   }, []);
   const statLabels = ["STATES","LGAS","SENATORIAL","REPS"];
-  const statColors = [C.green, C.amber, C.red, C.green];
+  const statColors = [C.brandMedium, C.amber, C.red, C.brandMedium];
 
   return (
-    <section style={{ minHeight:"100vh", background:C.bg, display:"flex", flexDirection:"column", justifyContent:"center", padding:"120px 5vw 80px", position:"relative", overflow:"hidden" }}>
-      <div style={{ position:"absolute", inset:0, backgroundImage:`linear-gradient(${C.border} 1px,transparent 1px),linear-gradient(90deg,${C.border} 1px,transparent 1px)`, backgroundSize:"48px 48px", opacity:0.5, pointerEvents:"none" }} />
-      <div style={{ position:"absolute", top:"30%", left:"50%", transform:"translateX(-50%)", width:"60vw", height:"40vw", borderRadius:"50%", background:`radial-gradient(ellipse,rgba(0,220,130,0.07) 0%,transparent 65%)`, pointerEvents:"none" }} />
+    <section style={{
+      minHeight: "100vh",
+      background: C.brandDark,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      padding: "120px 5vw 80px",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
+        backgroundSize: "48px 48px",
+        opacity: 0.5,
+        pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute",
+        top: "30%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "60vw",
+        height: "40vw",
+        borderRadius: "50%",
+        background: `radial-gradient(ellipse, rgba(255,255,255,0.06) 0%, transparent 65%)`,
+        pointerEvents: "none",
+      }} />
 
-      <div style={{ maxWidth:860, margin:"0 auto", width:"100%", textAlign:"center", position:"relative" }}>
-        <div style={{ display:"inline-flex", alignItems:"center", gap:8, border:`0.5px solid ${C.borderHi}`, background:C.greenDim, borderRadius:20, padding:"5px 16px", marginBottom:32 }}>
-          <div style={{ width:7, height:7, borderRadius:"50%", background:C.green }} />
-          <span className="font-mono" style={{ fontSize:11, color:C.green, letterSpacing:1.5 }}>2027 ELECTION CYCLE — TRACKING DEMOCRACY</span>
+      <div style={{ maxWidth: 860, margin: "0 auto", width: "100%", textAlign: "center", position: "relative" }}>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          border: `1px solid rgba(255,255,255,0.2)`,
+          background: "rgba(255,255,255,0.08)",
+          borderRadius: 999,
+          padding: "5px 16px",
+          marginBottom: 32,
+        }}>
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.mint }} />
+          <span style={{ fontFamily: F.mono, fontSize: 11, color: C.mint, letterSpacing: 1.5 }}>2027 ELECTION CYCLE — TRACKING DEMOCRACY</span>
         </div>
 
-        <h1 className="font-display" style={{ fontSize:"clamp(54px,9vw,108px)", fontWeight:900, lineHeight:0.92, margin:"0 0 6px", color:C.white, letterSpacing:-4 }}>Democracy</h1>
-        <h1 className="font-display" style={{ fontSize:"clamp(54px,9vw,108px)", fontWeight:900, lineHeight:0.92, margin:"0 0 32px", background:`linear-gradient(90deg,${C.green} 0%,#00ffaa 60%)`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", letterSpacing:-4 }}>Reimagined</h1>
+        <h1 style={{ fontFamily: F.display, fontSize: "clamp(42px, 8vw, 96px)", fontWeight: 900, lineHeight: 0.95, margin: "0 0 6px", color: C.white, letterSpacing: -3 }}>
+          Democracy
+        </h1>
+        <h1 style={{ fontFamily: F.display, fontSize: "clamp(42px, 8vw, 96px)", fontWeight: 900, lineHeight: 0.95, margin: "0 0 32px", color: C.mint, letterSpacing: -3 }}>
+          Reimagined
+        </h1>
 
-        <p style={{ fontSize:"clamp(15px,2vw,18px)", color:C.muted, lineHeight:1.75, maxWidth:560, margin:"0 auto 40px" }}>
+        <p style={{ fontSize: "clamp(15px, 2vw, 18px)", color: C.white70, lineHeight: 1.75, maxWidth: 560, margin: "0 auto 40px" }}>
           Nigeria's most advanced election intelligence platform. Real-time data, verified news, and civic education for the digital age.
         </p>
 
-        <div className="stat-bar" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", border:`0.5px solid ${C.border}`, borderRadius:12, overflow:"hidden", background:C.bg3, maxWidth:700, margin:"0 auto" }}>
-          {vals.map((v,i) => (
-            <div key={i} style={{ padding:"28px 16px", borderRight: i<3 ? `0.5px solid ${C.border}` : "none", textAlign:"center" }}>
-              <div className="font-mono" style={{ fontSize:"clamp(30px,4vw,48px)", fontWeight:900, color:statColors[i], lineHeight:1 }}>{v}</div>
-              <div className="font-mono" style={{ fontSize:10, color:C.muted, letterSpacing:2, marginTop:8 }}>{statLabels[i]}</div>
+        <div className="stat-bar" style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          border: `1px solid rgba(255,255,255,0.15)`,
+          borderRadius: 12,
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.05)",
+          maxWidth: 700,
+          margin: "0 auto",
+        }}>
+          {vals.map((v, i) => (
+            <div key={i} style={{
+              padding: "28px 16px",
+              borderRight: i < 3 ? `1px solid rgba(255,255,255,0.1)` : "none",
+              textAlign: "center",
+            }}>
+              <div style={{ fontFamily: F.mono, fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, color: statColors[i], lineHeight: 1 }}>
+                {v}
+              </div>
+              <div style={{ fontFamily: F.mono, fontSize: 10, color: C.white70, letterSpacing: 2, marginTop: 8 }}>
+                {statLabels[i]}
+              </div>
             </div>
           ))}
         </div>
@@ -380,13 +438,26 @@ function Ticker() {
     return () => clearInterval(iv);
   }, []);
   return (
-    <div style={{ background:C.red, overflow:"hidden", display:"flex", alignItems:"stretch" }}>
-      <div className="font-mono" style={{ background:"#b91c1c", padding:"10px 18px", fontWeight:700, fontSize:12, color:"#fff", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+    <div style={{ background: C.red, overflow: "hidden", display: "flex", alignItems: "stretch" }}>
+      <div style={{
+        background: "#b91c1c",
+        padding: "10px 18px",
+        fontWeight: 700,
+        fontSize: 11,
+        color: "#fff",
+        whiteSpace: "nowrap",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        flexShrink: 0,
+        letterSpacing: "0.05em",
+        textTransform: "uppercase" as const,
+      }}>
         ⚡ BREAKING
       </div>
-      <div style={{ overflow:"hidden", flex:1, display:"flex", alignItems:"center" }}>
-        <div ref={ref} style={{ whiteSpace:"nowrap", display:"inline-block", willChange:"transform" }}>
-          <span style={{ fontSize:13, color:"#fff" }}>&nbsp;&nbsp;{text}&nbsp;&nbsp;{text}&nbsp;&nbsp;</span>
+      <div style={{ overflow: "hidden", flex: 1, display: "flex", alignItems: "center" }}>
+        <div ref={ref} style={{ whiteSpace: "nowrap", display: "inline-block", willChange: "transform" }}>
+          <span style={{ fontSize: 13, color: "#fff" }}>&nbsp;&nbsp;{text}&nbsp;&nbsp;{text}&nbsp;&nbsp;</span>
         </div>
       </div>
     </div>
@@ -398,41 +469,111 @@ function NewsFeed() {
   const filters = ["All","Politics","Economy","Security","Society"];
   const visible = filter==="All" ? STORIES : STORIES.filter(s => s.tag===filter.toUpperCase());
   return (
-    <section style={{ background:C.bg2, padding:"64px 5vw" }}>
-      <div style={{ maxWidth:1280, margin:"0 auto" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:28, flexWrap:"wrap", gap:12 }}>
-          <h2 className="font-mono" style={{ fontSize:13, fontWeight:700, color:C.white, margin:0, letterSpacing:2 }}>LATEST STORIES</h2>
-          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+    <section style={{ background: C.pageBg, padding: "64px 5vw" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
+          <h2 style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: C.body,
+            margin: 0,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase" as const,
+          }}>
+            LATEST INTELLIGENCE
+          </h2>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {filters.map(f => (
-              <button key={f} onClick={() => setFilter(f)} className="font-mono" style={{ background: filter===f ? C.green : "transparent", border:`0.5px solid ${filter===f ? C.green : C.border}`, color: filter===f ? "#061006" : C.muted, padding:"5px 14px", borderRadius:20, fontSize:12, cursor:"pointer", fontWeight: filter===f ? 700 : 400 }}>
+              <button key={f} onClick={() => setFilter(f)} style={{
+                background: filter === f ? C.brandDark : "transparent",
+                border: `1px solid ${filter === f ? C.brandDark : C.divider}`,
+                color: filter === f ? C.white : C.secondary,
+                padding: "5px 14px",
+                borderRadius: 999,
+                fontSize: 12,
+                cursor: "pointer",
+                fontWeight: filter === f ? 700 : 500,
+                transition: "all 0.2s",
+              }}>
                 {f}
               </button>
             ))}
           </div>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))", gap:16 }}>
-          {visible.map((s,i) => (
-            <article key={i}
-              style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, overflow:"hidden", cursor:"pointer", transition:"border-color 0.2s,transform 0.2s" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor=C.borderHi; e.currentTarget.style.transform="translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.transform="translateY(0)"; }}
-            >
-              <div style={{ height:110, background:`linear-gradient(135deg,#0a1a0a 0%,#0f240f 100%)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:34, borderBottom:`0.5px solid ${C.border}` }}>{s.icon}</div>
-              <div style={{ padding:20 }}>
-                <Tag text={s.tag} />
-                <h3 className="font-display" style={{ fontSize:15, fontWeight:700, color:C.white, margin:"10px 0 8px", lineHeight:1.35 }}>{s.title}</h3>
-                <p style={{ fontSize:13, color:C.muted, margin:"0 0 16px", lineHeight:1.65 }}>{s.summary}</p>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <span className="font-mono" style={{ fontSize:11, color:C.faint }}>{s.source} · {s.time}</span>
-                  <span className="font-mono" style={{ fontSize:11, color:C.green }}>{s.read} →</span>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
+          {visible.map((s, i) => (
+            <article key={i} style={{
+              background: C.cardBg,
+              border: `1px solid ${C.cardBorder}`,
+              borderRadius: 12,
+              overflow: "hidden",
+              cursor: "pointer",
+              transition: "box-shadow 0.2s, transform 0.2s",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}>
+              <div style={{
+                height: 170,
+                background: `linear-gradient(135deg, #f0f4f0 0%, #e8ede8 100%)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 40,
+                borderBottom: `1px solid ${C.divider}`,
+              }}>
+                {s.icon}
+              </div>
+              <div style={{ padding: 20 }}>
+                <Pill text={s.tag} />
+                <h3 style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: C.body, margin: "12px 0 8px", lineHeight: 1.35 }}>
+                  {s.title}
+                </h3>
+                <p style={{ fontSize: 14, color: C.secondary, margin: "0 0 16px", lineHeight: 1.65 }}>
+                  {s.summary}
+                </p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 12, color: C.tertiary }}>
+                    {s.source} · {s.time}
+                  </span>
+                  <span style={{ fontSize: 12, color: C.brandMedium, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                    {s.read}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14"/>
+                      <path d="m12 5 7 7-7 7"/>
+                    </svg>
+                  </span>
                 </div>
               </div>
             </article>
           ))}
         </div>
-        <div style={{ textAlign:"center", marginTop:36 }}>
-          <button className="font-mono" style={{ background:"transparent", border:`0.5px solid ${C.borderHi}`, color:C.green, padding:"11px 32px", borderRadius:8, fontSize:13, cursor:"pointer" }}>Load More Stories</button>
+        <div style={{ textAlign: "center", marginTop: 48 }}>
+          <button style={{
+            background: "transparent",
+            border: `1px solid ${C.brandDark}`,
+            color: C.brandDark,
+            padding: "11px 32px",
+            borderRadius: 6,
+            fontSize: 13,
+            cursor: "pointer",
+            fontWeight: 600,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            transition: "all 0.2s",
+          }}>
+            Load More Stories
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -447,19 +588,52 @@ function DataTeaser() {
     { icon:"📡", title:"Live Tracker",      desc:"Real-time seat projections" },
   ];
   return (
-    <section style={{ background:C.bg, padding:"64px 5vw", borderTop:`0.5px solid ${C.border}` }}>
-      <div style={{ maxWidth:1280, margin:"0 auto" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:10, flexWrap:"wrap" }}>
-          <h2 className="font-mono" style={{ fontSize:13, fontWeight:700, color:C.white, margin:0, letterSpacing:2 }}>DATA EXPLORER</h2>
-          <span className="font-mono" style={{ fontSize:10, background:C.greenDim, border:`0.5px solid ${C.borderHi}`, color:C.green, padding:"2px 10px", borderRadius:20, letterSpacing:1 }}>COMING SOON</span>
+    <section style={{ background: C.pageBg, padding: "64px 5vw", borderTop: `1px solid ${C.divider}` }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 10, flexWrap: "wrap" }}>
+          <h2 style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: C.body,
+            margin: 0,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase" as const,
+          }}>
+            DATA EXPLORER
+          </h2>
+          <span style={{
+            fontSize: 10,
+            background: C.mint,
+            color: C.mintText,
+            padding: "3px 10px",
+            borderRadius: 999,
+            letterSpacing: "0.05em",
+            fontWeight: 700,
+            textTransform: "uppercase" as const,
+          }}>
+            COMING SOON
+          </span>
         </div>
-        <p style={{ fontSize:14, color:C.muted, margin:"0 0 28px" }}>Powerful election intelligence tools — launching before campaign season.</p>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:14 }}>
+        <p style={{ fontSize: 14, color: C.secondary, margin: "0 0 28px" }}>
+          Powerful election intelligence tools — launching before campaign season.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
           {items.map(item => (
-            <div key={item.title} style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, padding:22, opacity:0.5 }}>
-              <div style={{ fontSize:26, marginBottom:10 }}>{item.icon}</div>
-              <div className="font-display" style={{ fontSize:14, fontWeight:700, color:C.white, marginBottom:5 }}>{item.title}</div>
-              <div style={{ fontSize:12, color:C.muted }}>{item.desc}</div>
+            <div key={item.title} style={{
+              background: C.cardBg,
+              border: `1px solid ${C.cardBorder}`,
+              borderRadius: 12,
+              padding: 24,
+              opacity: 0.6,
+              transition: "opacity 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "0.6"}>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>{item.icon}</div>
+              <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, marginBottom: 5 }}>
+                {item.title}
+              </div>
+              <div style={{ fontSize: 13, color: C.secondary }}>{item.desc}</div>
             </div>
           ))}
         </div>
@@ -470,26 +644,61 @@ function DataTeaser() {
 
 function EducationHub() {
   return (
-    <section style={{ background:C.bg2, padding:"64px 5vw" }}>
-      <div style={{ maxWidth:1280, margin:"0 auto" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:32, flexWrap:"wrap", gap:12 }}>
+    <section style={{ background: C.pageBg, padding: "64px 5vw" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32, flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div className="font-mono" style={{ fontSize:11, color:C.green, letterSpacing:2, marginBottom:6 }}>EDUCATION HUB</div>
-            <h2 className="font-display" style={{ fontSize:22, fontWeight:700, color:C.white, margin:0 }}>Learn. Understand. Participate.</h2>
+            <div style={{ fontSize: 11, color: C.brandMedium, letterSpacing: "0.1em", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" as const }}>
+              EDUCATION HUB
+            </div>
+            <h2 style={{ fontFamily: F.display, fontSize: 24, fontWeight: 700, color: C.body, margin: 0 }}>
+              Learn. Understand. Participate.
+            </h2>
           </div>
-          <a href="/education" className="font-mono" style={{ fontSize:13, color:C.green, textDecoration:"none" }}>View All Articles →</a>
+          <a href="/education" style={{
+            fontSize: 13,
+            color: C.brandMedium,
+            textDecoration: "none",
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}>
+            View All Articles
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14"/>
+              <path d="m12 5 7 7-7 7"/>
+            </svg>
+          </a>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
           {EDUCATION.map(item => (
-            <div key={item.title}
-              style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, padding:28, cursor:"pointer", transition:"border-color 0.2s" }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor=C.borderHi)}
-              onMouseLeave={e => (e.currentTarget.style.borderColor=C.border)}
-            >
-              <div className="font-mono" style={{ fontSize:11, color:C.green, letterSpacing:1.5, marginBottom:14 }}>{item.label}</div>
-              <div style={{ fontSize:28, marginBottom:12 }}>{item.icon}</div>
-              <h3 className="font-display" style={{ fontSize:16, fontWeight:700, color:C.white, margin:"0 0 8px" }}>{item.title}</h3>
-              <p style={{ fontSize:13, color:C.muted, margin:0, lineHeight:1.65 }}>{item.desc}</p>
+            <div key={item.title} style={{
+              background: C.cardBg,
+              border: `1px solid ${C.cardBorder}`,
+              borderRadius: 12,
+              padding: 28,
+              cursor: "pointer",
+              transition: "box-shadow 0.2s, transform 0.2s",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}>
+              <div style={{ fontSize: 11, color: C.brandMedium, letterSpacing: "0.08em", marginBottom: 14, fontWeight: 700, textTransform: "uppercase" as const }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>{item.icon}</div>
+              <h3 style={{ fontFamily: F.display, fontSize: 17, fontWeight: 700, color: C.body, margin: "0 0 8px" }}>
+                {item.title}
+              </h3>
+              <p style={{ fontSize: 14, color: C.secondary, margin: 0, lineHeight: 1.65 }}>
+                {item.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -500,95 +709,139 @@ function EducationHub() {
 
 function Newsletter() {
   return (
-    <section style={{ background:C.bg, padding:"80px 5vw", borderTop:`0.5px solid ${C.border}`, position:"relative", overflow:"hidden" }}>
-      <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:"50vw", height:"30vw", borderRadius:"50%", background:`radial-gradient(ellipse,rgba(0,220,130,0.06) 0%,transparent 70%)`, pointerEvents:"none" }} />
-      <div style={{ maxWidth:600, margin:"0 auto", textAlign:"center", position:"relative" }}>
-        <div style={{ fontFamily:F.mono, fontSize:11, color:C.green, letterSpacing:2, marginBottom:14 }}>STAY INFORMED</div>
-        <h2 style={{ fontFamily:F.display, fontSize:"clamp(24px,4vw,42px)", fontWeight:900, color:C.white, margin:"0 0 16px", letterSpacing:-1 }}>Stay Ahead of the Election Curve</h2>
-        <p style={{ fontSize:15, color:C.muted, margin:"0 0 36px", lineHeight:1.7 }}>Real-time alerts, in-depth analysis, and important updates delivered straight to your inbox.</p>
-        <div style={{ maxWidth:460, margin:"0 auto" }}>
+    <section style={{
+      background: C.newsletterBg,
+      padding: "80px 5vw",
+      borderTop: `1px solid ${C.divider}`,
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%,-50%)",
+        width: "50vw",
+        height: "30vw",
+        borderRadius: "50%",
+        background: `radial-gradient(ellipse, rgba(27,67,50,0.06) 0%, transparent 70%)`,
+        pointerEvents: "none",
+      }} />
+      <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center", position: "relative" }}>
+        <div style={{
+          width: 48,
+          height: 48,
+          borderRadius: "50%",
+          background: C.mint,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto 16px",
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.mintText} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <div style={{ fontFamily: F.mono, fontSize: 11, color: C.brandMedium, letterSpacing: "0.1em", marginBottom: 14, fontWeight: 700 }}>
+          STAY INFORMED
+        </div>
+        <h2 style={{ fontFamily: F.display, fontSize: "clamp(24px, 4vw, 42px)", fontWeight: 900, color: C.body, margin: "0 0 16px", letterSpacing: -1 }}>
+          Stay Ahead of the Election Curve
+        </h2>
+        <p style={{ fontSize: 15, color: C.secondary, margin: "0 0 36px", lineHeight: 1.7 }}>
+          Real-time alerts, in-depth analysis, and important updates delivered straight to your inbox.
+        </p>
+        <div style={{ maxWidth: 460, margin: "0 auto" }}>
           <NewsletterForm />
         </div>
       </div>
     </section>
   );
 }
+
 function Footer() {
   return (
-    <footer style={{ background:"#060a06", padding:"64px 5vw 32px", borderTop:`0.5px solid ${C.border}` }}>
-      <div style={{ maxWidth:1280, margin:"0 auto" }}>
-        {/* Top Section with Logo */}
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", marginBottom:48, paddingBottom:40, borderBottom:`0.5px solid ${C.border}` }}>
-          <div style={{ 
-            width:56, 
-            height:56, 
-            borderRadius:14, 
-            background: `linear-gradient(135deg, ${C.green}20, ${C.green}10)`,
-            border:`1.5px solid ${C.green}`, 
-            display:"flex", 
-            alignItems:"center", 
-            justifyContent:"center",
-            marginBottom:20,
-            boxShadow: `0 0 30px ${C.greenDim}`
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 12 2 2 4-4"/>
-              <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
-              <path d="M12 2v3"/>
-              <path d="M12 19v3"/>
-              <path d="M19 12h3"/>
-              <path d="M2 12h3"/>
-            </svg>
+    <footer style={{ background: C.brandDark, padding: "64px 5vw 32px", borderTop: `1px solid rgba(255,255,255,0.1)` }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginBottom: 48, paddingBottom: 40, borderBottom: `1px solid rgba(255,255,255,0.1)` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              background: "rgba(255,255,255,0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 12 2 2 4-4"/>
+                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
+              </svg>
+            </div>
+            <div style={{ lineHeight: 1.2 }}>
+              <div style={{ fontFamily: F.display, fontSize: 16, fontWeight: 700, color: C.white, letterSpacing: 0.3 }}>Naija Election Watch</div>
+              <div style={{ fontSize: 10, color: C.white70, letterSpacing: 1.5, marginTop: 2 }}>TRACKING DEMOCRACY · 2027</div>
+            </div>
           </div>
-          <div className="font-display" style={{ fontSize:20, fontWeight:700, color:C.white, letterSpacing:0.5, marginBottom:6 }}>Naija Election Watch</div>
-          <div className="font-mono" style={{ fontSize:10, color:C.muted, letterSpacing:2, marginBottom:16 }}>TRACKING DEMOCRACY · 2027</div>
-          <p style={{ fontSize:14, color:C.muted, lineHeight:1.7, maxWidth:400, margin:0 }}>Your trusted source for real-time election updates, in-depth analysis, and data for a better informed Nigeria.</p>
+          <p style={{ fontSize: 14, color: C.white70, lineHeight: 1.7, maxWidth: 400, margin: 0 }}>
+            Your trusted source for real-time election updates, in-depth analysis, and data for a better informed Nigeria.
+          </p>
         </div>
 
-        {/* Links Grid */}
-        <div className="footer-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:40, marginBottom:48 }}>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40, marginBottom: 48 }}>
           {[
             { title:"EXPLORE",   links:["News","Live Tracker","Data Hub","Education Hub","Videos"] },
             { title:"RESOURCES", links:["Reports","Methodology","Glossary","Press Kit","FAQ"] },
             { title:"COMPANY",   links:["About Us","Careers","Contact","Privacy Policy","Terms"] },
           ].map(col => (
-            <div key={col.title} style={{ textAlign:"center" }}>
-              <div className="font-mono" style={{ fontSize:10, fontWeight:700, color:C.faint, letterSpacing:2, marginBottom:20 }}>{col.title}</div>
+            <div key={col.title}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.white70, letterSpacing: "0.1em", marginBottom: 20, textTransform: "uppercase" as const }}>
+                {col.title}
+              </div>
               {col.links.map(link => (
-                <a key={link} href="#" style={{ display:"block", fontSize:13, color:C.muted, textDecoration:"none", marginBottom:12, transition:"color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = C.white}
-                  onMouseLeave={e => e.currentTarget.style.color = C.muted}
-                >{link}</a>
+                <a key={link} href="#" style={{
+                  display: "block",
+                  fontSize: 13,
+                  color: C.white70,
+                  textDecoration: "none",
+                  marginBottom: 12,
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = C.white}
+                onMouseLeave={e => e.currentTarget.style.color = C.white70}>
+                  {link}
+                </a>
               ))}
             </div>
           ))}
         </div>
 
-        {/* Social & Copyright */}
-        <div style={{ borderTop:`0.5px solid ${C.border}`, paddingTop:32, display:"flex", flexDirection:"column", alignItems:"center", gap:20 }}>
-          <div style={{ display:"flex", gap:12 }}>
-            {["𝕏","f","📷","▶"].map((icon,i) => (
-              <div key={i} style={{ 
-                width:40, 
-                height:40, 
-                borderRadius:10, 
-                border:`0.5px solid ${C.border}`, 
-                display:"flex", 
-                alignItems:"center", 
-                justifyContent:"center", 
-                fontSize:14, 
-                cursor:"pointer", 
-                color:C.muted,
-                transition:"all 0.2s"
+        <div style={{ borderTop: `1px solid rgba(255,255,255,0.1)`, paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
+          <div style={{ display: "flex", gap: 12 }}>
+            {["𝕏","f","📷","▶"].map((icon, i) => (
+              <div key={i} style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                border: `1px solid rgba(255,255,255,0.15)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 14,
+                cursor: "pointer",
+                color: C.white70,
+                transition: "all 0.2s",
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.green; e.currentTarget.style.color = C.green; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
-              >{icon}</div>
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}>
+                {icon}
+              </div>
             ))}
           </div>
-          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <span style={{ width:4, height:4, borderRadius:"50%", background:C.green }}></span>
-            <span className="font-mono" style={{ fontSize:11, color:C.faint }}>© 2026 Naija Election Watch. All rights reserved.</span>
+          <div style={{ fontSize: 12, color: C.white70 }}>
+            © 2026 Naija Election Watch. All rights reserved.
           </div>
         </div>
       </div>
@@ -615,7 +868,6 @@ export default function Home() {
         }
         @media(max-width:580px){
           .stat-bar{grid-template-columns:repeat(2,1fr)!important}
-          .nl-row{flex-direction:column!important}
           .footer-grid{grid-template-columns:1fr!important; gap:32px!important}
         }
       `}</style>
