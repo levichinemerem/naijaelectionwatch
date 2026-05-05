@@ -3,27 +3,33 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import NewsletterForm from "@/app/components/NewsletterForm";
 
+/* ─── DESIGN SYSTEM ─── */
 const C = {
-  bg:       "#0a0f0a",
-  bg2:      "#0f1a0f",
-  bg3:      "#111e11",
-  border:   "rgba(0,220,130,0.12)",
-  borderHi: "rgba(0,220,130,0.3)",
-  green:    "#00dc82",
-  greenDim: "rgba(0,220,130,0.1)",
-  amber:    "#f59e0b",
-  red:      "#ef4444",
-  white:    "#f0f4f0",
-  muted:    "rgba(240,244,240,0.5)",
-  faint:    "rgba(240,244,240,0.2)",
+  brandDark:    "#1B4332",
+  brandMedium:  "#2D6A4F",
+  mint:         "#D8F3DC",
+  mintText:     "#1B4332",
+  pageBg:       "#FFFFFF",
+  cardBg:       "#FFFFFF",
+  cardBorder:   "#E8E8E8",
+  divider:      "#E5E7EB",
+  body:         "#111827",
+  secondary:    "#6B7280",
+  tertiary:     "#9CA3AF",
+  white:        "#FFFFFF",
+  white70:      "rgba(255,255,255,0.7)",
+  red:          "#ef4444",
+  amber:        "#f59e0b",
+  newsletterBg: "#F0FAF4",
 };
 
 const F = {
-  body:    "'Inter', sans-serif",
-  display: "'Space Grotesk', sans-serif",
+  body:    "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  display: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   mono:    "'JetBrains Mono', monospace",
 };
 
+/* ─── DATA (unchanged) ─── */
 const ARTICLES: Record<string, {
   title: string; category: string; source: string; author: string;
   timestamp: string; readTime: string; icon: string; summary: string;
@@ -118,93 +124,235 @@ const ALL_ARTICLES_LIST = [
 ];
 
 const NAV_LINKS = [
-  { label:"Home",       href:"/" },
-  { label:"News",       href:"/news" },
-  { label:"Education",  href:"/education" },
-  { label:"About Us",   href:"/about" },
+  { label: "Home",      href: "/" },
+  { label: "News",      href: "/news" },
+  { label: "Education", href: "/education" },
+  { label: "About Us",  href: "/about" },
 ];
 
-// ─── NAVBAR ──────────────────────────────────────────────────────────────────
-function NavBar() {
+/* ─── NAVBAR ─── */
+function NavBar({ activeLabel }: { activeLabel?: string }) {
   const [solid, setSolid] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const fn = () => setSolid(window.scrollY > 60);
-    window.addEventListener("scroll", fn, { passive:true });
+    window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
   return (
-    <nav style={{ position:"fixed", inset:"0 0 auto 0", zIndex:200, background: solid ? "rgba(10,15,10,0.97)" : "rgba(10,15,10,0.9)", backdropFilter:"blur(14px)", borderBottom:`0.5px solid ${C.border}`, padding:"0 5vw", transition:"all 0.25s" }}>
-      <div style={{ maxWidth:1280, margin:"0 auto", display:"flex", alignItems:"center", height:62, gap:8 }}>
-        <Link href="/" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none", flexShrink:0, marginRight:16 }}>
-          <div style={{ width:34, height:34, borderRadius:6, border:`1.5px solid ${C.green}`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:F.mono, fontWeight:600, fontSize:11, color:C.green }}>NW</div>
-          <div style={{ lineHeight:1.1 }}>
-            <div style={{ fontFamily:F.display, fontSize:13, color:C.white }}>
-              <span style={{ fontWeight:700 }}>Naija</span><span style={{ fontWeight:300 }}> Election</span>
-            </div>
-            <div style={{ fontFamily:F.mono, fontSize:9, color:C.muted, letterSpacing:"0.18em" }}>WATCH · 2027</div>
-          </div>
-        </Link>
+    <>
+      <nav style={{
+        position: "fixed", inset: "0 0 auto 0", zIndex: 200,
+        background: solid ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderBottom: `1px solid ${C.divider}`,
+        transition: "all 0.25s", padding: "0 5vw",
+      }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
 
-        <div className="nav-links" style={{ display:"flex", gap:2, flex:1 }}>
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link key={label} href={href} style={{ fontFamily:F.body, fontSize:13, color: label==="News" ? C.green : C.muted, padding:"5px 12px", borderRadius:5, textDecoration:"none", borderBottom: label==="News" ? `2px solid ${C.green}` : "2px solid transparent" }}>
-              {label}
+          {/* Logo */}
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: C.brandDark, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 12 2 2 4-4"/>
+                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
+              </svg>
+            </div>
+            <div style={{ lineHeight: 1.15 }}>
+              <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.2 }}>Naija Election Watch</div>
+              <div style={{ fontSize: 10, color: C.secondary, letterSpacing: "0.05em" }}>Tracking Democracy</div>
+            </div>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="nav-links-desktop" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
+            {NAV_LINKS.map((item) => {
+              const isActive = activeLabel ? item.label === activeLabel : item.label === "News";
+              return (
+                <Link key={item.label} href={item.href} style={{
+                  color: isActive ? C.brandMedium : C.body,
+                  fontSize: 14, fontWeight: 500,
+                  padding: "8px 16px",
+                  paddingBottom: isActive ? 6 : 8,
+                  borderRadius: 6, textDecoration: "none",
+                  letterSpacing: 0.2, transition: "color 0.2s",
+                  borderBottom: isActive ? `2px solid ${C.brandMedium}` : "2px solid transparent",
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = C.brandMedium; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = C.body; }}>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Desktop CTA */}
+          <div className="nav-cta-desktop" style={{ display: "flex", marginLeft: "auto" }}>
+            <button style={{
+              background: C.brandDark, border: "none", color: C.white,
+              padding: "9px 20px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+              cursor: "pointer", letterSpacing: 0.3,
+              display: "flex", alignItems: "center", gap: 7, transition: "background 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = C.brandMedium}
+            onMouseLeave={e => e.currentTarget.style.background = C.brandDark}>
+              Get Alerts
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
+            display: "none", background: "transparent",
+            border: `1px solid ${C.divider}`, color: C.body,
+            padding: "9px", borderRadius: 8, cursor: "pointer", marginLeft: "auto",
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              {menuOpen
+                ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+                : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
+              }
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile panel */}
+      <div className="mobile-panel" style={{
+        position: "fixed", top: 0, right: 0, bottom: 0, width: 280,
+        background: C.pageBg, borderLeft: `1px solid ${C.divider}`,
+        zIndex: 300,
+        transform: menuOpen ? "translateX(0)" : "translateX(100%)",
+        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        display: "flex", flexDirection: "column", padding: "24px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32, paddingTop: 8 }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: C.body }}>Menu</span>
+          <button onClick={() => setMenuOpen(false)} style={{ background: "transparent", border: "none", color: C.body, padding: 8, borderRadius: 8, cursor: "pointer" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          {NAV_LINKS.map((item, i) => (
+            <Link key={item.label} href={item.href} onClick={() => setMenuOpen(false)} style={{
+              color: i === 0 ? C.brandMedium : C.body,
+              fontSize: 20, fontWeight: i === 0 ? 600 : 400,
+              padding: "16px 0", textDecoration: "none",
+              borderBottom: `1px solid ${C.divider}`,
+            }}>
+              {item.label}
             </Link>
           ))}
         </div>
-
-        <div style={{ display:"flex", gap:10, marginLeft:"auto" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:6, background:C.greenDim, border:`0.5px solid ${C.borderHi}`, padding:"7px 14px", borderRadius:6 }}>
-            <div style={{ width:7, height:7, borderRadius:"50%", background:C.red }} />
-            <span style={{ fontFamily:F.mono, fontSize:11, letterSpacing:"0.12em", color:C.green }}>LIVE</span>
-          </div>
-          <button style={{ fontFamily:F.display, fontWeight:600, background:C.green, border:"none", color:"#061006", padding:"7px 16px", borderRadius:6, fontSize:13, cursor:"pointer" }}>Get Alerts</button>
+        <div style={{ paddingTop: 24 }}>
+          <button style={{
+            background: C.brandDark, border: "none", color: C.white,
+            padding: 14, borderRadius: 8, fontSize: 14, fontWeight: 700,
+            cursor: "pointer", width: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          }}>
+            Get Alerts
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            </svg>
+          </button>
         </div>
       </div>
-    </nav>
+
+      {menuOpen && (
+        <div onClick={() => setMenuOpen(false)} style={{
+          position: "fixed", inset: 0,
+          background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)",
+          zIndex: 250, animation: "fadeIn 0.3s ease",
+        }} />
+      )}
+    </>
   );
 }
 
-// ─── FOOTER ───────────────────────────────────────────────────────────────────
+/* ─── FOOTER ─── */
 function Footer() {
   return (
-    <footer style={{ background:"#060a06", padding:"48px 5vw 24px", borderTop:`0.5px solid ${C.border}` }}>
-      <div style={{ maxWidth:1280, margin:"0 auto" }}>
-        <div className="footer-grid" style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
-          <div>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
-              <div style={{ width:34, height:34, borderRadius:6, border:`1.5px solid ${C.green}`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:F.mono, fontWeight:600, fontSize:11, color:C.green }}>NW</div>
-              <div style={{ lineHeight:1.1 }}>
-                <div style={{ fontFamily:F.display, fontSize:13, color:C.white }}><span style={{ fontWeight:700 }}>Naija</span><span style={{ fontWeight:300 }}> Election</span></div>
-                <div style={{ fontFamily:F.mono, fontSize:9, color:C.muted, letterSpacing:"0.18em" }}>WATCH · 2027</div>
-              </div>
+    <footer style={{ background: C.brandDark, padding: "64px 5vw 32px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+        <div style={{ marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 12 2 2 4-4"/>
+                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
+              </svg>
             </div>
-            <p style={{ fontFamily:F.body, fontSize:13, color:C.muted, lineHeight:1.7, maxWidth:260, margin:"0 0 20px" }}>Your trusted source for real-time election updates, in-depth analysis, and data for a better informed Nigeria.</p>
+            <div style={{ lineHeight: 1.2 }}>
+              <div style={{ fontFamily: F.display, fontSize: 16, fontWeight: 700, color: C.white }}>Naija Election Watch</div>
+              <div style={{ fontSize: 10, color: C.white70, letterSpacing: 1.5, marginTop: 2 }}>TRACKING DEMOCRACY · 2027</div>
+            </div>
           </div>
+          <p style={{ fontSize: 14, color: C.white70, lineHeight: 1.7, maxWidth: 380, margin: 0 }}>
+            Independent. In-depth. Real time. Your trusted source for election intelligence for a better informed Nigeria.
+          </p>
+        </div>
+
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40, marginBottom: 48 }}>
           {[
-            { title:"EXPLORE",   links:["News","Live Tracker","Data Hub","Education Hub","Videos"] },
-            { title:"RESOURCES", links:["Reports","Methodology","Glossary","Press Kit","FAQ"] },
-            { title:"COMPANY",   links:["About Us","Careers","Contact","Privacy Policy","Terms"] },
+            { title: "EXPLORE",   links: ["News", "Live Tracker", "Data Hub", "Education Hub", "Videos"] },
+            { title: "RESOURCES", links: ["Reports", "Methodology", "Glossary", "Press Kit", "FAQ"] },
+            { title: "COMPANY",   links: ["About Us", "Careers", "Contact", "Privacy Policy", "Terms"] },
           ].map(col => (
             <div key={col.title}>
-              <div style={{ fontFamily:F.mono, fontSize:"0.65rem", fontWeight:600, color:C.faint, letterSpacing:"0.18em", marginBottom:16 }}>{col.title}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.white70, letterSpacing: "0.1em", marginBottom: 20, textTransform: "uppercase" as const }}>{col.title}</div>
               {col.links.map(link => (
-                <a key={link} href="#" style={{ fontFamily:F.body, display:"block", fontSize:13, color:C.muted, textDecoration:"none", marginBottom:10 }}>{link}</a>
+                <a key={link} href="#" style={{ display: "block", fontSize: 13, color: C.white70, textDecoration: "none", marginBottom: 12, transition: "color 0.2s" }}
+                  onMouseEnter={e => e.currentTarget.style.color = C.white}
+                  onMouseLeave={e => e.currentTarget.style.color = C.white70}>
+                  {link}
+                </a>
               ))}
             </div>
           ))}
         </div>
-        <div style={{ borderTop:`0.5px solid ${C.border}`, paddingTop:20, display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-          <span style={{ fontFamily:F.body, fontSize:12, color:C.faint }}>© 2026 Naija Election Watch. All rights reserved.</span>
-          <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.faint, letterSpacing:"0.06em" }}>BUILT WITH AI · MADE FOR NIGERIA 🇳🇬</span>
+
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
+          <div style={{ display: "flex", gap: 10 }}>
+            {["𝕏", "in", "f", "▶"].map((icon, i) => (
+              <div key={i} style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, cursor: "pointer", color: C.white70, transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}>
+                {icon}
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 12, color: C.white70 }}>© 2026 Naija Election Watch. All rights reserved.</div>
         </div>
       </div>
     </footer>
   );
 }
 
-// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
+/* ─── PILL ─── */
+function Pill({ text }: { text: string }) {
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+      textTransform: "uppercase" as const,
+      color: C.mintText, background: C.mint,
+      padding: "3px 10px", borderRadius: 999, display: "inline-block",
+    }}>
+      {text}
+    </span>
+  );
+}
+
+/* ─── MAIN PAGE ─── */
 export default function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const article = getArticle(slug);
@@ -220,75 +368,115 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   return (
     <>
       <style>{`
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'Inter',sans-serif; background:#0a0f0a; color:#f0f4f0; -webkit-font-smoothing:antialiased; }
-        input::placeholder { color:rgba(240,244,240,0.3); }
-        button:active { transform:scale(0.97); }
-        @media(max-width:768px) {
-          .nav-links { display:none!important; }
-          .article-grid { grid-template-columns:1fr!important; }
-          .sidebar { display:none!important; }
-          .footer-grid { grid-template-columns:1fr 1fr!important; }
-          .footer-grid>div:first-child { grid-column:span 2!important; }
-          .share-label { display:none!important; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @media (max-width: 768px) {
+          .nav-links-desktop { display: none !important; }
+          .nav-cta-desktop   { display: none !important; }
+          .nav-hamburger     { display: flex !important; }
+          .article-grid      { grid-template-columns: 1fr !important; }
+          .sidebar           { display: none !important; }
+          .share-label       { display: none !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-panel { display: none !important; }
+        }
+        @media (max-width: 580px) {
+          .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
         }
       `}</style>
 
-      <NavBar />
+      <NavBar activeLabel="News" />
 
-      {/* BREADCRUMB */}
-      <div style={{ paddingTop:62, background:C.bg, borderBottom:`0.5px solid ${C.border}` }}>
-        <div style={{ maxWidth:1280, margin:"0 auto", padding:"12px 5vw", display:"flex", alignItems:"center", gap:8 }}>
-          <Link href="/" style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.1em", color:C.muted, textDecoration:"none" }}>HOME</Link>
-          <span style={{ color:C.faint, fontSize:10 }}>›</span>
-          <Link href="/news" style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.1em", color:C.muted, textDecoration:"none" }}>NEWS</Link>
-          <span style={{ color:C.faint, fontSize:10 }}>›</span>
-          <span style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.1em", color:C.green }}>{article.category}</span>
+      {/* ── BREADCRUMB ── */}
+      <div style={{ paddingTop: 64, background: C.pageBg, borderBottom: `1px solid ${C.divider}` }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 5vw", display: "flex", alignItems: "center", gap: 8 }}>
+          <Link href="/" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: C.secondary, textDecoration: "none", textTransform: "uppercase" as const }}>Home</Link>
+          <span style={{ color: C.tertiary, fontSize: 12 }}>›</span>
+          <Link href="/news" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: C.secondary, textDecoration: "none", textTransform: "uppercase" as const }}>News</Link>
+          <span style={{ color: C.tertiary, fontSize: 12 }}>›</span>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: C.brandMedium, textTransform: "uppercase" as const }}>{article.category}</span>
         </div>
       </div>
 
-      {/* ARTICLE HERO */}
-      <div style={{ background:C.bg, padding:"48px 5vw 0", position:"relative", overflow:"hidden" }}>
-        <div style={{ position:"absolute", inset:0, backgroundImage:`linear-gradient(${C.border} 1px,transparent 1px),linear-gradient(90deg,${C.border} 1px,transparent 1px)`, backgroundSize:"48px 48px", opacity:0.4, pointerEvents:"none" }} />
-        <div style={{ maxWidth:800, margin:"0 auto", position:"relative", paddingBottom:48 }}>
+      {/* ── ARTICLE HERO ── */}
+      <div style={{ background: C.pageBg, padding: "48px 5vw 0" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", paddingBottom: 40 }}>
 
           {/* Meta row */}
-          <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, flexWrap:"wrap" }}>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.12em", color:C.green, background:C.greenDim, border:`0.5px solid ${C.borderHi}`, padding:"3px 10px", borderRadius:3 }}>{article.category}</span>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.muted }}>{article.source}</span>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.faint }}>·</span>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.faint }}>{article.timestamp}</span>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.faint }}>·</span>
-            <span style={{ fontFamily:F.mono, fontSize:"0.65rem", color:C.green }}>{article.readTime}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+            <Pill text={article.category} />
+            <span style={{ fontSize: 12, color: C.secondary, fontWeight: 600 }}>{article.source}</span>
+            <span style={{ color: C.tertiary, fontSize: 12 }}>·</span>
+            <span style={{ fontSize: 12, color: C.tertiary }}>{article.timestamp}</span>
+            <span style={{ color: C.tertiary, fontSize: 12 }}>·</span>
+            <span style={{ fontSize: 12, color: C.brandMedium, fontWeight: 600 }}>{article.readTime}</span>
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontFamily:F.display, fontWeight:700, fontSize:"clamp(1.8rem,4vw,3rem)", letterSpacing:"-0.03em", lineHeight:1.1, color:C.white, marginBottom:20 }}>
+          <h1 style={{
+            fontFamily: F.display,
+            fontWeight: 800,
+            fontSize: "clamp(1.8rem, 4vw, 3rem)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+            color: C.body,
+            marginBottom: 20,
+          }}>
             {article.title}
           </h1>
 
           {/* Summary standfirst */}
-          <p style={{ fontFamily:F.body, fontSize:18, color:C.muted, lineHeight:1.7, marginBottom:28, borderLeft:`3px solid ${C.green}`, paddingLeft:16 }}>
+          <p style={{
+            fontSize: 18,
+            color: C.secondary,
+            lineHeight: 1.7,
+            marginBottom: 28,
+            borderLeft: `3px solid ${C.brandMedium}`,
+            paddingLeft: 16,
+          }}>
             {article.summary}
           </p>
 
-          {/* Author + share */}
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12, paddingTop:20, borderTop:`0.5px solid ${C.border}` }}>
-            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-              <div style={{ width:36, height:36, borderRadius:"50%", background:`linear-gradient(135deg,${C.green},#00aa66)`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:F.display, fontWeight:700, fontSize:13, color:"#061006" }}>
-                {article.author.split(" ").map((w: string) => w[0]).join("").slice(0,2)}
+          {/* Author + share row */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            flexWrap: "wrap", gap: 12,
+            paddingTop: 20, borderTop: `1px solid ${C.divider}`,
+          }}>
+            {/* Author */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: "50%",
+                background: C.mint,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: F.display, fontWeight: 700, fontSize: 13, color: C.brandDark,
+              }}>
+                {article.author.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
               </div>
               <div>
-                <div style={{ fontFamily:F.display, fontWeight:600, fontSize:14, color:C.white }}>{article.author}</div>
-                <div style={{ fontFamily:F.mono, fontSize:"0.6rem", color:C.muted, letterSpacing:"0.1em" }}>NAIJA ELECTION WATCH</div>
+                <div style={{ fontFamily: F.display, fontWeight: 600, fontSize: 14, color: C.body }}>{article.author}</div>
+                <div style={{ fontSize: 10, color: C.tertiary, letterSpacing: "0.08em", textTransform: "uppercase" as const, marginTop: 2 }}>Naija Election Watch</div>
               </div>
             </div>
-            <div style={{ display:"flex", gap:8 }}>
-              {[["𝕏","Share on X"],["f","Facebook"],["🔗","Copy link"]].map(([icon, label]) => (
-                <button key={label} onClick={label==="Copy link" ? handleCopy : undefined}
-                  style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.08em", background:"transparent", border:`0.5px solid ${C.border}`, color: label==="Copy link" && copied ? C.green : C.muted, padding:"6px 12px", borderRadius:6, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+
+            {/* Share buttons */}
+            <div style={{ display: "flex", gap: 8 }}>
+              {[["𝕏", "Share on X"], ["f", "Facebook"], ["🔗", "Copy link"]].map(([icon, label]) => (
+                <button key={label}
+                  onClick={label === "Copy link" ? handleCopy : undefined}
+                  style={{
+                    fontSize: 12, fontWeight: 500,
+                    background: "transparent",
+                    border: `1px solid ${C.divider}`,
+                    color: label === "Copy link" && copied ? C.brandMedium : C.secondary,
+                    padding: "7px 12px", borderRadius: 7,
+                    cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = C.brandDark; e.currentTarget.style.color = C.brandDark; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = C.divider; e.currentTarget.style.color = label === "Copy link" && copied ? C.brandMedium : C.secondary; }}>
                   <span>{icon}</span>
-                  <span className="share-label">{label==="Copy link" && copied ? "Copied!" : label}</span>
+                  <span className="share-label">{label === "Copy link" && copied ? "Copied!" : label}</span>
                 </button>
               ))}
             </div>
@@ -296,27 +484,58 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         </div>
       </div>
 
-      {/* BODY + SIDEBAR */}
-      <div style={{ background:C.bg2, padding:"48px 5vw 64px" }}>
-        <div className="article-grid" style={{ maxWidth:1280, margin:"0 auto", display:"grid", gridTemplateColumns:"minmax(0,1fr) 300px", gap:48 }}>
+      {/* ── BODY + SIDEBAR ── */}
+      <div style={{ background: C.newsletterBg, padding: "48px 5vw 80px", borderTop: `1px solid ${C.divider}` }}>
+        <div className="article-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 48 }}>
 
-          {/* ARTICLE BODY */}
+          {/* ── ARTICLE BODY ── */}
           <div>
             {/* AI Summary box */}
-            <div style={{ background:C.bg3, border:`0.5px solid ${C.borderHi}`, borderRadius:12, padding:20, marginBottom:36 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                <span style={{ fontSize:16 }}>✦</span>
-                <span style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.15em", color:C.green }}>AI SUMMARY</span>
+            <div style={{
+              background: C.cardBg,
+              border: `1px solid ${C.cardBorder}`,
+              borderLeft: `3px solid ${C.brandMedium}`,
+              borderRadius: 10,
+              padding: "20px 24px",
+              marginBottom: 36,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 15 }}>✦</span>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: C.brandMedium, textTransform: "uppercase" as const }}>AI Summary</span>
               </div>
-              <p style={{ fontFamily:F.body, fontSize:14, color:C.muted, lineHeight:1.7, margin:0 }}>{article.summary}</p>
+              <p style={{ fontSize: 14, color: C.secondary, lineHeight: 1.7, margin: 0 }}>{article.summary}</p>
             </div>
 
-            {/* Paragraphs */}
-            <div style={{ maxWidth:680 }}>
+            {/* Article image placeholder */}
+            <div style={{
+              height: 280,
+              background: `linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)`,
+              borderRadius: 12,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 64,
+              marginBottom: 36,
+              border: `1px solid ${C.cardBorder}`,
+            }}>
+              {article.icon}
+            </div>
+
+            {/* Body paragraphs */}
+            <div style={{ maxWidth: 680 }}>
               {article.body.map((para: string, i: number) => {
                 const isQuote = para.startsWith('"') || para.startsWith('\u201c');
                 return (
-                  <p key={i} style={{ fontFamily:F.body, fontSize:16, color: isQuote ? C.white : C.muted, lineHeight:1.8, marginBottom:24, paddingLeft: isQuote ? 16 : 0, borderLeft: isQuote ? `3px solid ${C.green}` : "none", fontStyle: isQuote ? "italic" : "normal" }}>
+                  <p key={i} style={{
+                    fontSize: 16,
+                    color: isQuote ? C.body : C.secondary,
+                    lineHeight: 1.85,
+                    marginBottom: 24,
+                    paddingLeft: isQuote ? 16 : 0,
+                    borderLeft: isQuote ? `3px solid ${C.brandMedium}` : "none",
+                    fontStyle: isQuote ? "italic" : "normal",
+                    fontWeight: isQuote ? 500 : 400,
+                  }}>
                     {para}
                   </p>
                 );
@@ -324,39 +543,55 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             </div>
 
             {/* Tags */}
-            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:36, paddingTop:24, borderTop:`0.5px solid ${C.border}` }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 36, paddingTop: 24, borderTop: `1px solid ${C.divider}` }}>
               {article.tags.map((tag: string) => (
-                <span key={tag} style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.1em", color:C.green, border:`0.5px solid ${C.border}`, background:C.greenDim, padding:"4px 12px", borderRadius:20, cursor:"pointer" }}>{tag}</span>
+                <span key={tag} style={{
+                  fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+                  color: C.brandMedium,
+                  border: `1px solid ${C.mint}`,
+                  background: C.mint,
+                  padding: "5px 12px", borderRadius: 999, cursor: "pointer",
+                  transition: "background 0.2s",
+                }}>
+                  {tag}
+                </span>
               ))}
             </div>
 
-            {/* Source */}
-            <div style={{ marginTop:32, padding:16, background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:10 }}>
-              <div style={{ fontFamily:F.mono, fontSize:"0.6rem", letterSpacing:"0.1em", color:C.faint, marginBottom:4 }}>SOURCE</div>
-              <div style={{ fontFamily:F.body, fontSize:13, color:C.muted }}>
-                Originally reported by <span style={{ color:C.white }}>{article.source}</span>. Summary and analysis by Naija Election Watch AI.{" "}
-                <a href="#" style={{ color:C.green, textDecoration:"none" }}>Read original →</a>
+            {/* Source attribution */}
+            <div style={{ marginTop: 28, padding: "16px 20px", background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 10 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: C.tertiary, textTransform: "uppercase" as const, marginBottom: 6 }}>Source</div>
+              <div style={{ fontSize: 13, color: C.secondary }}>
+                Originally reported by <span style={{ color: C.body, fontWeight: 600 }}>{article.source}</span>. Summary and analysis by Naija Election Watch.{" "}
+                <a href="#" style={{ color: C.brandMedium, textDecoration: "none", fontWeight: 600 }}>Read original →</a>
               </div>
             </div>
 
-            {/* Related */}
+            {/* Related stories */}
             {related.length > 0 && (
-              <div style={{ marginTop:48 }}>
-                <div style={{ fontFamily:F.mono, fontSize:"0.7rem", letterSpacing:"0.15em", color:C.green, marginBottom:20 }}>RELATED STORIES</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <div style={{ marginTop: 48 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 20 }}>Related Stories</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {related.map(r => (
-                    <Link key={r.slug} href={`/news/${r.slug}`} style={{ textDecoration:"none" }}>
-                      <div style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:10, padding:16, display:"flex", gap:14, alignItems:"center", transition:"border-color 0.2s" }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor=C.borderHi)}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor=C.border)}
-                      >
-                        <div style={{ fontSize:24, flexShrink:0 }}>{r.icon}</div>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontFamily:F.mono, fontSize:"0.6rem", letterSpacing:"0.1em", color:C.green, marginBottom:4 }}>{r.category}</div>
-                          <div style={{ fontFamily:F.display, fontWeight:600, fontSize:14, color:C.white, lineHeight:1.35 }}>{r.title}</div>
-                          <div style={{ fontFamily:F.mono, fontSize:"0.6rem", color:C.faint, marginTop:4 }}>{r.source} · {r.time}</div>
+                    <Link key={r.slug} href={`/news/${r.slug}`} style={{ textDecoration: "none" }}>
+                      <div style={{
+                        background: C.cardBg,
+                        border: `1px solid ${C.cardBorder}`,
+                        borderRadius: 10, padding: 16,
+                        display: "flex", gap: 14, alignItems: "center",
+                        transition: "box-shadow 0.2s, transform 0.2s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
+                        <div style={{ fontSize: 28, flexShrink: 0 }}>{r.icon}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ marginBottom: 4 }}><Pill text={r.category} /></div>
+                          <div style={{ fontFamily: F.display, fontWeight: 600, fontSize: 14, color: C.body, lineHeight: 1.35 }}>{r.title}</div>
+                          <div style={{ fontSize: 11, color: C.tertiary, marginTop: 4 }}>{r.source} · {r.time}</div>
                         </div>
-                        <span style={{ color:C.green, fontSize:16, flexShrink:0 }}>→</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.brandMedium} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                        </svg>
                       </div>
                     </Link>
                   ))}
@@ -365,42 +600,83 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             )}
           </div>
 
-          {/* SIDEBAR */}
-          <aside className="sidebar" style={{ position:"sticky", top:90, alignSelf:"start", display:"flex", flexDirection:"column", gap:20 }}>
+          {/* ── SIDEBAR ── */}
+          <aside className="sidebar" style={{ position: "sticky", top: 90, alignSelf: "start", display: "flex", flexDirection: "column", gap: 20 }}>
 
             {/* Newsletter */}
-            <div style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, padding:22 }}>
-              <h3 style={{ fontFamily:F.display, fontWeight:700, fontSize:17, color:C.white, margin:"0 0 8px" }}>Get the Daily Brief</h3>
-              <p style={{ fontFamily:F.body, fontSize:13, color:C.muted, lineHeight:1.6, margin:"0 0 16px" }}>Top election stories every morning.</p>
+            <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 22 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: "50%", background: C.mint,
+                display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14,
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.brandDark} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: C.brandMedium, textTransform: "uppercase" as const, marginBottom: 6 }}>Stay Informed</div>
+              <h3 style={{ fontFamily: F.display, fontWeight: 700, fontSize: 16, color: C.body, margin: "0 0 8px" }}>Get the Daily Brief</h3>
+              <p style={{ fontSize: 13, color: C.secondary, lineHeight: 1.6, margin: "0 0 16px" }}>Top election stories every morning.</p>
               <NewsletterForm compact />
             </div>
 
             {/* More stories */}
-            <div style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, padding:22 }}>
-              <div style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.15em", color:C.green, marginBottom:16 }}>MORE STORIES</div>
-              <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-                {ALL_ARTICLES_LIST.filter(a => a.slug !== slug).slice(0,5).map(a => (
-                  <Link key={a.slug} href={`/news/${a.slug}`} style={{ textDecoration:"none", display:"flex", gap:10, alignItems:"flex-start" }}>
-                    <span style={{ fontSize:18, flexShrink:0 }}>{a.icon}</span>
-                    <div>
-                      <div style={{ fontFamily:F.display, fontWeight:600, fontSize:13, color:C.white, lineHeight:1.3, marginBottom:3 }}>{a.title}</div>
-                      <div style={{ fontFamily:F.mono, fontSize:"0.6rem", color:C.faint }}>{a.source} · {a.time}</div>
+            <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 22 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 16 }}>More Stories</div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {ALL_ARTICLES_LIST.filter(a => a.slug !== slug).slice(0, 5).map((a, i, arr) => (
+                  <Link key={a.slug} href={`/news/${a.slug}`} style={{ textDecoration: "none" }}>
+                    <div style={{
+                      display: "flex", gap: 12, alignItems: "flex-start",
+                      padding: "12px 0",
+                      borderBottom: i < arr.length - 1 ? `1px solid ${C.divider}` : "none",
+                      transition: "opacity 0.2s",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = "0.75"}
+                    onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+                      <span style={{ fontSize: 20, flexShrink: 0, marginTop: 1 }}>{a.icon}</span>
+                      <div>
+                        <div style={{ marginBottom: 4 }}><Pill text={a.category} /></div>
+                        <div style={{ fontFamily: F.display, fontWeight: 600, fontSize: 13, color: C.body, lineHeight: 1.3, marginBottom: 3 }}>{a.title}</div>
+                        <div style={{ fontSize: 11, color: C.tertiary }}>{a.source} · {a.time}</div>
+                      </div>
                     </div>
                   </Link>
                 ))}
               </div>
-              <Link href="/news" style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.1em", color:C.green, textDecoration:"none", display:"block", marginTop:16 }}>VIEW ALL STORIES →</Link>
+              <Link href="/news" style={{
+                fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+                color: C.brandMedium, textDecoration: "none",
+                display: "flex", alignItems: "center", gap: 4, marginTop: 16,
+              }}>
+                View all stories
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+              </Link>
             </div>
 
-            {/* Trending */}
-            <div style={{ background:C.bg3, border:`0.5px solid ${C.border}`, borderRadius:12, padding:22 }}>
-              <div style={{ fontFamily:F.mono, fontSize:"0.65rem", letterSpacing:"0.15em", color:C.green, marginBottom:14 }}>TRENDING</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+            {/* Trending topics */}
+            <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 22 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 14 }}>Trending Topics</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {["#2027Elections","#INEC","#PeterObi","#APC","#Tinubu","#LabourParty"].map(tag => (
-                  <span key={tag} style={{ fontFamily:F.mono, fontSize:"0.6rem", letterSpacing:"0.08em", color:C.green, border:`0.5px solid ${C.border}`, padding:"4px 10px", borderRadius:20, cursor:"pointer" }}>{tag}</span>
+                  <span key={tag} style={{
+                    fontSize: 11, fontWeight: 600,
+                    color: C.brandMedium,
+                    border: `1px solid ${C.mint}`,
+                    background: C.mint,
+                    padding: "5px 10px", borderRadius: 999, cursor: "pointer",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = C.brandMedium; (e.currentTarget as HTMLElement).style.color = C.white; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = C.mint; (e.currentTarget as HTMLElement).style.color = C.brandMedium; }}>
+                    {tag}
+                  </span>
                 ))}
               </div>
             </div>
+
           </aside>
         </div>
       </div>
