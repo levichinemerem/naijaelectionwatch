@@ -96,18 +96,19 @@ function NavBar() {
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
 
           {/* Logo */}
-          <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: C.brandDark, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 12 2 2 4-4"/>
-                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
-              </svg>
-            </div>
-            <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.2 }}>Naija Election Watch</div>
-              <div style={{ fontSize: 10, color: C.secondary, letterSpacing: "0.05em" }}>Tracking Democracy</div>
-            </div>
-          </a>
+            <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: C.brandDark, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                <img 
+                  src="/logo.png" 
+                  alt="Naija Election Watch" 
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }} 
+                />
+              </div>
+              <div style={{ lineHeight: 1.15 }}>
+                <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.2 }}>Naija Election Watch</div>
+                <div style={{ fontSize: 10, color: C.secondary, letterSpacing: "0.05em" }}>Tracking Democracy</div>
+              </div>
+            </a>
 
           {/* Desktop nav */}
           <div className="nav-links-desktop" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
@@ -420,19 +421,37 @@ function NewsFeed() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: 48 }}>
-          <button style={{
-            background: "transparent", border: `1.5px solid ${C.brandDark}`,
-            color: C.brandDark, padding: "11px 36px", borderRadius: 8,
-            fontSize: 13, cursor: "pointer", fontWeight: 600,
-            display: "inline-flex", alignItems: "center", gap: 8, transition: "all 0.2s",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = C.brandDark; e.currentTarget.style.color = C.white; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.brandDark; }}>
+          <a 
+            href="/news" 
+            style={{
+              textDecoration: "none", // Essential to remove the default link underline
+              background: "transparent", 
+              border: `1.5px solid ${C.brandDark}`,
+              color: C.brandDark, 
+              padding: "11px 36px", 
+              borderRadius: 8,
+              fontSize: 13, 
+              cursor: "pointer", 
+              fontWeight: 600,
+              display: "inline-flex", 
+              alignItems: "center", 
+              gap: 8, 
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => { 
+              e.currentTarget.style.background = C.brandDark; 
+              e.currentTarget.style.color = C.white; 
+            }}
+            onMouseLeave={e => { 
+              e.currentTarget.style.background = "transparent"; 
+              e.currentTarget.style.color = C.brandDark; 
+            }}
+          >
             Load More Stories
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6"/>
             </svg>
-          </button>
+          </a>
         </div>
       </div>
     </section>
@@ -570,10 +589,11 @@ function Footer() {
         <div style={{ marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 12 2 2 4-4"/>
-                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7z"/>
-              </svg>
+              <img 
+                  src="/logo.png" 
+                  alt="Naija Election Watch" 
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }} 
+                />
             </div>
             <div style={{ lineHeight: 1.2 }}>
               <div style={{ fontFamily: F.display, fontSize: 16, fontWeight: 700, color: C.white }}>Naija Election Watch</div>
