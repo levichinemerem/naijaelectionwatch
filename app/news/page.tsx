@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import NewsletterForm from "@/app/components/NewsletterForm";
+import { supabase } from "@/app/lib/supabase";
 
 /* ─── DESIGN SYSTEM ─── */
 const C = {
@@ -34,39 +35,21 @@ const F = {
 type Category = "All" | "Politics" | "Economy" | "Security" | "Society" | "Education";
 
 interface Article {
-  id: number;
+  id: string;
   title: string;
   summary: string;
+  ai_summary: string | null;
   category: Exclude<Category, "All">;
   source: string;
-  timestamp: string;
+  published_at: string;
   icon: string;
   slug: string;
+  url: string;
+  image_url: string | null;
+  ai_bias: string | null;
 }
 
-/* ─── DATA (unchanged) ─── */
-const ALL_ARTICLES: Article[] = [
-  { id:1,  category:"Politics",  icon:"🗳️", source:"Premium Times",  timestamp:"1h ago",  title:"INEC Releases Final Voter Register Ahead of 2027 Elections",          summary:"The Independent National Electoral Commission has published the certified voter register with over 95 million registered voters, the largest in Nigeria's democratic history.", slug:"inec-releases-final-voter-register-2027" },
-  { id:2,  category:"Politics",  icon:"🏛️", source:"Vanguard",        timestamp:"2h ago",  title:"Tinubu's Camp Begins Quiet Outreach to Middle Belt Governors",         summary:"Political realignments intensify as key presidential aides engage in strategic consultations across Benue, Plateau and Nassarawa states.", slug:"tinubu-camp-outreach-middle-belt-governors" },
-  { id:3,  category:"Economy",   icon:"💹", source:"BusinessDay",      timestamp:"3h ago",  title:"Naira Slides as Election Season Spending Begins to Heat Up",           summary:"Currency volatility increases as campaign spending and political activities drive unprecedented demand for foreign exchange in major cities.", slug:"naira-slides-election-season-spending" },
-  { id:4,  category:"Security",  icon:"🛡️", source:"Channels TV",      timestamp:"4h ago",  title:"Army Deploys Additional Units to Three Volatile States",               summary:"Security reinforcement aims to ensure peaceful electoral processes in states with history of pre-election violence and community clashes.", slug:"army-deploys-units-volatile-states" },
-  { id:5,  category:"Politics",  icon:"🎙️", source:"Guardian NG",      timestamp:"5h ago",  title:"Peter Obi Addresses Youth Summit on Electoral Reform",                 summary:"The Labour Party leader calls for comprehensive electoral reforms and increased youth participation, drawing a crowd of over 10,000 at the Abuja summit.", slug:"peter-obi-youth-summit-electoral-reform" },
-  { id:6,  category:"Economy",   icon:"📊", source:"ThisDay",           timestamp:"6h ago",  title:"CBN Warns of Inflation Risk in Run-Up to 2027 Vote",                   summary:"Central Bank issues formal advisory on potential inflationary pressures as election-related spending is projected to inject ₦2.3 trillion into circulation.", slug:"cbn-warns-inflation-risk-2027-vote" },
-  { id:7,  category:"Society",   icon:"🌍", source:"Punch",             timestamp:"7h ago",  title:"Civil Society Groups Launch Voter Education Campaign Across 10 States",  summary:"A coalition of 47 non-governmental organisations has launched a coordinated campaign to increase voter awareness and combat election misinformation.", slug:"civil-society-voter-education-campaign" },
-  { id:8,  category:"Security",  icon:"🔒", source:"Daily Trust",       timestamp:"8h ago",  title:"INEC Assesses Polling Unit Security in Northeast",                     summary:"Commission evaluates security arrangements across 4,200 polling units in states affected by insurgency, with new biometric verification systems being tested.", slug:"inec-polling-unit-security-northeast" },
-  { id:9,  category:"Politics",  icon:"⚖️", source:"Sahara Reporters", timestamp:"9h ago",  title:"Labour Party Files Suit Challenging New Electoral Guidelines",          summary:"Legal challenge filed at the Federal High Court against recently introduced electoral regulations deemed to disadvantage opposition parties in primaries.", slug:"labour-party-suit-electoral-guidelines" },
-  { id:10, category:"Economy",   icon:"🌐", source:"BusinessDay",       timestamp:"10h ago", title:"Foreign Investors Watch Nigerian Election Calendar Closely",            summary:"International investors from the UK, UAE and US are monitoring political developments as election season approaches, with $4.2bn in FDI decisions on hold.", slug:"foreign-investors-watch-election-calendar" },
-  { id:11, category:"Society",   icon:"📋", source:"NOIPolls",          timestamp:"11h ago", title:"Survey: 68% of Nigerian Youth Say They Will Vote in 2027",             summary:"Landmark poll of 12,000 Nigerians aged 18-35 shows record voter intention, potentially reshaping electoral outcomes in urban constituencies.", slug:"survey-68-percent-nigerian-youth-vote-2027" },
-  { id:12, category:"Education", icon:"📖", source:"INEC",              timestamp:"12h ago", title:"How to Check If You Are Registered to Vote — Step by Step Guide",      summary:"Comprehensive official guide explaining the process of verifying voter registration status online via the INEC portal and via SMS short code.", slug:"how-to-check-voter-registration" },
-  { id:13, category:"Politics",  icon:"🎯", source:"Premium Times",     timestamp:"1d ago",  title:"APC Announces National Convention Date for Party Primaries",           summary:"Nigeria's ruling party sets October date for national convention to elect new leadership and screen presidential aspirants.", slug:"apc-national-convention-date" },
-  { id:14, category:"Politics",  icon:"🤝", source:"Vanguard",          timestamp:"1d ago",  title:"PDP Governors Meet in Abuja Over Presidential Zoning Formula",         summary:"Opposition governors hold closed-door session to deliberate on contentious zoning formula for the 2027 presidential ticket.", slug:"pdp-governors-abuja-zoning" },
-  { id:15, category:"Economy",   icon:"⛽", source:"BusinessDay",       timestamp:"1d ago",  title:"Fuel Subsidy Removal Projected to Raise Campaign Costs by 40%",        summary:"Economic analysts project significantly higher campaign logistics costs following subsidy removal, potentially favouring well-funded incumbents.", slug:"fuel-subsidy-removal-campaign-costs" },
-  { id:16, category:"Security",  icon:"💻", source:"Channels TV",       timestamp:"2d ago",  title:"New Cybercrime Act Raises Concerns for Online Election Campaigns",      summary:"Digital campaign strategists flag provisions in the amended cybercrime legislation that could restrict social media election activities.", slug:"cybercrime-act-online-campaigns" },
-  { id:17, category:"Society",   icon:"👩", source:"Guardian NG",       timestamp:"2d ago",  title:"Women Groups Demand 35% Representation in Party Tickets",              summary:"Coalition of women's organisations presents formal demands to INEC and party chairmen for legally binding representation quotas.", slug:"women-groups-35-percent-representation" },
-  { id:18, category:"Education", icon:"📝", source:"INEC",              timestamp:"2d ago",  title:"Election Observers Get New Online Accreditation Portal",               summary:"New digital system streamlines accreditation for 15,000 domestic and international observers ahead of 2027 general elections.", slug:"election-observers-accreditation-portal" },
-];
-
-const SOURCES    = ["Premium Times","Vanguard","Channels TV","Punch","ThisDay","Guardian NG","Daily Trust","Sahara Reporters"];
+const SOURCES    = ["Premium Times","Channels TV","Punch","ThisDay","Daily Post","Daily Trust","Sahara Reporters","Leadership"];
 const TAGS       = ["#2027Elections","#INEC","#PeterObi","#APC","#Tinubu","#LabourParty"];
 const CATEGORIES: Category[] = ["All","Politics","Economy","Security","Society","Education"];
 
@@ -112,8 +95,6 @@ function NavBar() {
         transition: "all 0.25s", padding: "0 5vw",
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
-
-          {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
             <Image src="/logo.png" alt="Naija Election Watch" width={36} height={36} style={{ borderRadius: 8, objectFit: "contain" }} />
             <div style={{ lineHeight: 1.15 }}>
@@ -122,7 +103,6 @@ function NavBar() {
             </div>
           </Link>
 
-          {/* Desktop nav */}
           <div className="nav-links-desktop" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
             {NAV_LINKS.map((item) => {
               const isActive = item.label === "News";
@@ -144,7 +124,6 @@ function NavBar() {
             })}
           </div>
 
-          {/* Desktop CTA */}
           <div className="nav-cta-desktop" style={{ display: "flex", marginLeft: "auto" }}>
             <button style={{
               background: C.brandDark, border: "none", color: C.white,
@@ -162,7 +141,6 @@ function NavBar() {
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
             display: "none", background: "transparent",
             border: `1px solid ${C.divider}`, color: C.body,
@@ -178,7 +156,6 @@ function NavBar() {
         </div>
       </nav>
 
-      {/* Mobile panel */}
       <div className="mobile-panel" style={{
         position: "fixed", top: 0, right: 0, bottom: 0, width: 280,
         background: C.pageBg, borderLeft: `1px solid ${C.divider}`,
@@ -254,8 +231,23 @@ function ArticleCard({ article }: { article: Article }) {
           background: "linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 36, borderRight: `1px solid ${C.divider}`,
+          overflow: "hidden", position: "relative",
         }}>
-          {article.icon}
+          {article.image_url ? (
+            <img
+              src={article.image_url}
+              alt={article.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+              onError={e => {
+                e.currentTarget.style.display = "none";
+                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = "block";
+              }}
+            />
+          ) : null}
+          <span style={{ display: article.image_url ? "none" : "block" }}>
+            {article.icon}
+          </span>
         </div>
 
         {/* Content */}
@@ -263,7 +255,9 @@ function ArticleCard({ article }: { article: Article }) {
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
             <Pill text={article.category} />
             <span style={{ fontSize: 12, color: C.secondary, fontWeight: 500 }}>{article.source}</span>
-            <span style={{ fontSize: 12, color: C.tertiary, marginLeft: "auto" }}>{article.timestamp}</span>
+            <span style={{ fontSize: 12, color: C.tertiary, marginLeft: "auto" }}>
+              {new Date(article.published_at).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
+            </span>
           </div>
           <h3 style={{
             fontFamily: F.display, fontWeight: 700, fontSize: 15,
@@ -276,7 +270,7 @@ function ArticleCard({ article }: { article: Article }) {
             overflow: "hidden", display: "-webkit-box",
             WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
           }}>
-            {article.summary}
+            {article.ai_summary || article.summary}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 10, borderTop: `1px solid ${C.divider}` }}>
             <span style={{ fontSize: 12, color: C.brandMedium, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
@@ -285,13 +279,24 @@ function ArticleCard({ article }: { article: Article }) {
                 <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
               </svg>
             </span>
-            <span style={{
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
-              color: C.brandMedium, background: C.mint,
-              padding: "2px 8px", borderRadius: 999,
-            }}>
-              AI SUMMARISED
-            </span>
+            {article.ai_bias && article.ai_bias !== "Neutral" && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                color: C.amber, background: "rgba(245,158,11,0.1)",
+                padding: "2px 8px", borderRadius: 999,
+              }}>
+                {article.ai_bias.toUpperCase()}
+              </span>
+            )}
+            {article.ai_summary && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                color: C.brandMedium, background: C.mint,
+                padding: "2px 8px", borderRadius: 999,
+              }}>
+                AI SUMMARISED
+              </span>
+            )}
           </div>
         </div>
       </article>
@@ -303,8 +308,6 @@ function ArticleCard({ article }: { article: Article }) {
 function Sidebar() {
   return (
     <aside style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-
-      {/* Trending */}
       <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 14 }}>
           Trending
@@ -325,7 +328,6 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Sources */}
       <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 14 }}>
           Sources We Monitor
@@ -346,7 +348,6 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Newsletter */}
       <div style={{ background: C.newsletterBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 20 }}>
         <div style={{
           width: 40, height: 40, borderRadius: "50%", background: C.mint,
@@ -371,7 +372,6 @@ function Footer() {
   return (
     <footer style={{ background: C.brandDark, padding: "64px 5vw 32px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-
         <div style={{ marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <Image src="/logo.png" alt="Naija Election Watch" width={36} height={36} style={{ borderRadius: 8, objectFit: "contain" }} />
@@ -428,18 +428,42 @@ function Footer() {
 
 /* ─── MAIN PAGE ─── */
 export default function NewsPage() {
-  const [filter, setFilter]   = useState<Category>("All");
-  const [search, setSearch]   = useState("");
-  const [sort, setSort]       = useState<"latest" | "oldest">("latest");
-  const [visible, setVisible] = useState(12);
-  const [loading, setLoading] = useState(false);
+  const [filter, setFilter]       = useState<Category>("All");
+  const [search, setSearch]       = useState("");
+  const [sort, setSort]           = useState<"latest" | "oldest">("latest");
+  const [visible, setVisible]     = useState(12);
+  const [loading, setLoading]     = useState(false);
+  const [articles, setArticles]   = useState<Article[]>([]);
+  const [dbLoading, setDbLoading] = useState(true);
 
-  const filtered = ALL_ARTICLES
+  useEffect(() => {
+    supabase
+      .from("articles")
+      .select("*")
+      .order("published_at", { ascending: false })
+      .limit(200)
+      .then(({ data, error }) => {
+        if (data?.length) setArticles(data as Article[]);
+        if (error) console.error("Supabase fetch error:", error.message);
+        setDbLoading(false);
+      });
+  }, []);
+
+  const filtered = articles
     .filter(a => filter === "All" || a.category === filter)
     .filter(a => a.title.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const da = new Date(a.published_at).getTime();
+      const db = new Date(b.published_at).getTime();
+      return sort === "latest" ? db - da : da - db;
+    })
     .slice(0, visible);
 
-  const hasMore = visible < ALL_ARTICLES.filter(a => filter === "All" || a.category === filter).length;
+  const totalFiltered = articles
+    .filter(a => filter === "All" || a.category === filter)
+    .filter(a => a.title.toLowerCase().includes(search.toLowerCase())).length;
+
+  const hasMore = visible < totalFiltered;
 
   const loadMore = () => {
     setLoading(true);
@@ -487,7 +511,11 @@ export default function NewsPage() {
             Verified, AI-summarised election news from Nigeria's most trusted sources.
           </p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-            {["247 Stories Published", "12 Sources Monitored", "Updated Every Hour"].map(s => (
+            {[
+              `${articles.length} Stories Published`,
+              `${SOURCES.length} Sources Monitored`,
+              "Updated Every Hour"
+            ].map(s => (
               <div key={s} style={{
                 fontFamily: F.mono, fontSize: 11, letterSpacing: "0.1em",
                 color: C.mint, background: "rgba(216,243,220,0.12)",
@@ -508,8 +536,6 @@ export default function NewsPage() {
         borderBottom: `1px solid ${C.divider}`, padding: "12px 5vw",
       }}>
         <div className="filter-bar" style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-
-          {/* Search */}
           <div style={{ position: "relative", flex: 1, minWidth: 200, maxWidth: 380 }}>
             <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 14, pointerEvents: "none" }}>🔍</span>
             <input
@@ -526,7 +552,6 @@ export default function NewsPage() {
             />
           </div>
 
-          {/* Category pills */}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => { setFilter(cat); setVisible(12); }} style={{
@@ -542,7 +567,6 @@ export default function NewsPage() {
             ))}
           </div>
 
-          {/* Sort */}
           <select
             value={sort}
             onChange={e => setSort(e.target.value as "latest" | "oldest")}
@@ -563,9 +587,13 @@ export default function NewsPage() {
       <div style={{ background: C.newsletterBg, padding: "40px 5vw 80px", borderTop: `1px solid ${C.divider}` }}>
         <div className="main-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 32 }}>
 
-          {/* Articles */}
           <div>
-            {filtered.length === 0 ? (
+            {dbLoading ? (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: C.secondary }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+                <div style={{ fontSize: 16 }}>Loading live stories…</div>
+              </div>
+            ) : filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 20px", color: C.secondary }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
                 <div style={{ fontSize: 16 }}>No stories found for "{search}"</div>
@@ -587,12 +615,11 @@ export default function NewsPage() {
               }}
               onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = C.brandDark; e.currentTarget.style.color = C.white; } }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = loading ? C.tertiary : C.brandDark; }}>
-                {loading ? "Loading…" : "Load More Stories"}
+                {loading ? "Loading…" : `Load More Stories (${totalFiltered - visible} remaining)`}
               </button>
             )}
           </div>
 
-          {/* Sidebar */}
           <div className="sidebar" style={{ position: "sticky", top: 130, alignSelf: "start" }}>
             <Sidebar />
           </div>
