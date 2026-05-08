@@ -40,27 +40,22 @@ function generateSlug(title: string, url: string): string {
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .slice(0, 80);
-  // append short hash from URL to guarantee uniqueness
   const hash = Buffer.from(url).toString("base64").slice(0, 6).replace(/[^a-z0-9]/gi, "");
   return `${base}-${hash}`;
 }
 
 function extractUrl(item: string, fallbackLink: string): string {
-  // Priority 1: <link> tag (most reliable)
   const linkMatch =
     item.match(/<link>(https?:\/\/[^<]+)<\/link>/) ||
     item.match(/<link>\s*<!\[CDATA\[(https?:\/\/[^\]]+)\]\]>\s*<\/link>/);
   if (linkMatch?.[1]) return linkMatch[1].trim();
 
-  // Priority 2: <guid isPermaLink="true">
   const guidPerma = item.match(/<guid[^>]*isPermaLink="true"[^>]*>(https?:\/\/[^<]+)<\/guid>/);
   if (guidPerma?.[1]) return guidPerma[1].trim();
 
-  // Priority 3: any <guid> that looks like a URL
   const guidUrl = item.match(/<guid[^>]*>(https?:\/\/[^<]+)<\/guid>/);
   if (guidUrl?.[1]) return guidUrl[1].trim();
 
-  // Priority 4: origLink (some feeds use this)
   const origLink = item.match(/<feedburner:origLink>(https?:\/\/[^<]+)<\/feedburner:origLink>/);
   if (origLink?.[1]) return origLink[1].trim();
 
@@ -68,91 +63,95 @@ function extractUrl(item: string, fallbackLink: string): string {
 }
 
 async function parseRSS(feedUrl: string, sourceName: string) {
-  const res = await fetch(feedUrl, {
-    headers: { "User-Agent": "NaijaElectionWatch/1.0 (+https://naijaelectionwatch.vercel.app)" },
-    signal: AbortSignal.timeout(10000),
-  });
+  console.log(`[SCRAPE] Fetching ${sourceName} -> ${feedUrl}`);
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  try {
+    const res = await fetch(feedUrl, {
+      headers: { "User-Agent": "NaijaElectionWatch/1.0 (+https://naijaelectionwatch.vercel.app)" },
+      signal: AbortSignal.timeout(15000),
+    });
 
-  const xml = await res.text();
-  const items: Array<{
-    title: string;
-    url: string;
-    summary: string;
-    image: string;
-    published: string;
-    author: string;
-  }> = [];
-
-  const itemMatches = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
-
-  for (const match of itemMatches) {
-    const item = match[1];
-
-    const title =
-      item.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)?.[1] ||
-      item.match(/<title>([\s\S]*?)<\/title>/)?.[1] ||
-      "";
-
-    const rawLink =
-      item.match(/<link>(https?:\/\/[^<]+)<\/link>/)?.[1] || "";
-
-    const url = extractUrl(item, rawLink);
-
-    const desc =
-      item.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)?.[1] ||
-      item.match(/<description>([\s\S]*?)<\/description>/)?.[1] ||
-      "";
-
-    const pubDate =
-      item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ||
-      item.match(/<dc:date>([\s\S]*?)<\/dc:date>/)?.[1] ||
-      "";
-
-    const author =
-      item.match(/<dc:creator><!\[CDATA\[([\s\S]*?)\]\]><\/dc:creator>/)?.[1] ||
-      item.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/)?.[1] ||
-      item.match(/<author>([\s\S]*?)<\/author>/)?.[1] ||
-      "";
-
-    const image =
-      item.match(/<media:content[^>]*url="([^"]+)"/)?.[1] ||
-      item.match(/<enclosure[^>]*url="([^"]+)"/)?.[1] ||
-      item.match(/<media:thumbnail[^>]*url="([^"]+)"/)?.[1] ||
-      desc.match(/<img[^>]+src="([^"]+)"/)?.[1] ||
-      "";
-
-    const cleanDesc = desc.replace(/<[^>]*>/g, "").trim().slice(0, 400);
-
-    if (title.trim() && url.startsWith("http")) {
-      items.push({
-        title: title.trim(),
-        url,
-        summary: cleanDesc,
-        image,
-        published: pubDate,
-        author: author.replace(/<[^>]*>/g, "").trim(),
-      });
+    if (!res.ok) {
+      console.error(`[SCRAPE] ${sourceName} HTTP ${res.status}`);
+      throw new Error(`HTTP ${res.status}`);
     }
-  }
 
-  return items;
+    const xml = await res.text();
+    console.log(`[SCRAPE] ${sourceName} returned ${xml.length} chars, found ${ (xml.match(/<item>/g) || []).length } items`);
+
+    const itemMatches = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
+    const items: any[] = [];
+
+    for (const match of itemMatches.slice(0, 20)) {
+      const item = match[1];
+
+      const title =
+        item.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)?.[1] ||
+        item.match(/<title>([\s\S]*?)<\/title>/)?.[1] || "";
+
+      const rawLink = item.match(/<link>(https?:\/\/[^<]+)<\/link>/)?.[1] || "";
+      const url = extractUrl(item, rawLink);
+
+      const desc =
+        item.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)?.[1] ||
+        item.match(/<description>([\s\S]*?)<\/description>/)?.[1] || "";
+
+      const pubDate =
+        item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ||
+        item.match(/<dc:date>([\s\S]*?)<\/dc:date>/)?.[1] || "";
+
+      const author =
+        item.match(/<dc:creator><!\[CDATA\[([\s\S]*?)\]\]><\/dc:creator>/)?.[1] ||
+        item.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/)?.[1] ||
+        item.match(/<author>([\s\S]*?)<\/author>/)?.[1] || "";
+
+      const image =
+        item.match(/<media:content[^>]*url="([^"]+)"/)?.[1] ||
+        item.match(/<enclosure[^>]*url="([^"]+)"/)?.[1] ||
+        item.match(/<media:thumbnail[^>]*url="([^"]+)"/)?.[1] ||
+        desc.match(/<img[^>]+src="([^"]+)"/)?.[1] || "";
+
+      const cleanDesc = desc.replace(/<[^>]*>/g, "").trim().slice(0, 400);
+
+      if (title.trim() && url.startsWith("http")) {
+        items.push({
+          title: title.trim(),
+          url,
+          summary: cleanDesc,
+          image,
+          published: pubDate,
+          author: author.replace(/<[^>]*>/g, "").trim(),
+        });
+      }
+    }
+
+    console.log(`[SCRAPE] ${sourceName}: Parsed ${items.length} valid articles`);
+    return items;
+  } catch (e: any) {
+    console.error(`[SCRAPE] Error parsing ${sourceName}:`, e.message);
+    throw e;
+  }
 }
 
 export async function GET(req: Request) {
+  const startTime = Date.now();
   const { searchParams } = new URL(req.url);
+
   if (searchParams.get("secret") !== process.env.SCRAPE_SECRET) {
+    console.warn("[SCRAPE] Unauthorized attempt");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  console.log(`[SCRAPE] 🚀 Starting scrape at ${new Date().toISOString()}`);
 
   let totalSaved = 0;
   let totalSkipped = 0;
   const errors: string[] = [];
   const results: Record<string, number> = {};
 
-  for (const source of SOURCES) {
+  for (const [index, source] of SOURCES.entries()) {
     try {
+      console.log(`[SCRAPE] Processing ${index + 1}/${SOURCES.length}: ${source.name}`);
       const items = await parseRSS(source.url, source.name);
 
       for (const item of items.slice(0, 15)) {
@@ -168,7 +167,7 @@ export async function GET(req: Request) {
               category,
               source:       source.name,
               author:       item.author || null,
-              url:          item.url,           // ← original article URL always saved
+              url:          item.url,
               image_url:    item.image || null,
               published_at: item.published
                 ? new Date(item.published).toISOString()
@@ -176,30 +175,42 @@ export async function GET(req: Request) {
               slug,
               icon: detectIcon(category),
             },
-            { onConflict: "url" }              // ← deduplicate by original URL
+            { onConflict: "url" }
           );
 
         if (error) {
           if (error.code === "23505") {
-            totalSkipped++; // duplicate, already exists
+            totalSkipped++;
           } else {
             errors.push(`${source.name}: ${error.message}`);
+            console.error(`[SCRAPE] Supabase error for ${source.name}:`, error.message);
           }
         } else {
           totalSaved++;
           results[source.name] = (results[source.name] || 0) + 1;
         }
       }
-    } catch (e: unknown) {
-      errors.push(`${source.name}: ${e instanceof Error ? e.message : String(e)}`);
+
+      // Small delay between sources
+      if (index < SOURCES.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+      }
+    } catch (e: any) {
+      const msg = e instanceof Error ? e.message : String(e);
+      errors.push(`${source.name}: ${msg}`);
+      console.error(`[SCRAPE] Failed ${source.name}:`, msg);
     }
   }
+
+  const duration = Date.now() - startTime;
+  console.log(`[SCRAPE] ✅ Finished in ${duration}ms | Saved: ${totalSaved} | Skipped: ${totalSkipped} | Errors: ${errors.length}`);
 
   return NextResponse.json({
     success: true,
     saved: totalSaved,
     skipped: totalSkipped,
+    duration_ms: duration,
     per_source: results,
-    errors,
+    errors: errors.slice(0, 10), // limit errors returned
   });
 }
