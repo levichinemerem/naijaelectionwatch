@@ -67,7 +67,11 @@ async function parseRSS(feedUrl: string, sourceName: string) {
 
   try {
     const res = await fetch(feedUrl, {
-      headers: { "User-Agent": "NaijaElectionWatch/1.0 (+https://naijaelectionwatch.vercel.app)" },
+      headers: { 
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
       signal: AbortSignal.timeout(15000),
     });
 
