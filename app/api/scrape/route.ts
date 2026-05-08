@@ -7,7 +7,7 @@ const SOURCES = [
   { name: "Channels TV",     url: "https://www.channelstv.com/feed",                  icon: "📺" },
   { name: "Punch",           url: "https://punchng.com/feed",                         icon: "👊" },
   { name: "ThisDay",         url: "https://www.thisdaylive.com/feed",                 icon: "📄" },
-  { name: "Daily Post", url: "https://dailypost.ng/feed", icon: "📝" },
+  { name: "Daily Post",      url: "https://dailypost.ng/feed",                        icon: "📝" },
   { name: "Daily Trust",     url: "https://dailytrust.com/feed",                      icon: "✅" },
   { name: "Sahara Reporters", url: "https://saharareporters.com/articles/rss-feed",   icon: "🔍" },
 ];
