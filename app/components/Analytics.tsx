@@ -1,5 +1,6 @@
 "use client";
 import Script from "next/script";
+import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 
 export default function Analytics() {
   return (
@@ -11,6 +12,7 @@ export default function Analytics() {
         gtag('js', new Date());
         gtag('config', 'G-LJC2QQFK86');
       `}} />
+      <VercelAnalytics />
     </>
   );
 }
