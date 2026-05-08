@@ -3,11 +3,11 @@ import { supabaseAdmin } from "@/app/lib/supabase";
 
 const SOURCES = [
   { name: "Premium Times",   url: "https://www.premiumtimesng.com/feed",              icon: "🗞️" },
-  { name: "Vanguard",        url: "https://www.vanguardngr.com/feed",                 icon: "📰" },
+  { name: "Vanguard",        url: "https://www.vanguardngr.com//category/news/politics/feed/",                 icon: "📰" },
   { name: "Channels TV",     url: "https://www.channelstv.com/feed",                  icon: "📺" },
   { name: "Punch",           url: "https://punchng.com/feed",                         icon: "👊" },
   { name: "ThisDay",         url: "https://www.thisdaylive.com/feed",                 icon: "📄" },
-  { name: "Guardian NG",     url: "https://guardian.ng/feed/",                        icon: "🛡️" },
+  { name: "Guardian NG",     url: "https://guardian.ng/category/nigeria/politics/feed/",                        icon: "🛡️" },
   { name: "Daily Trust",     url: "https://dailytrust.com/feed",                      icon: "✅" },
   { name: "Sahara Reporters", url: "https://saharareporters.com/articles/rss-feed",   icon: "🔍" },
 ];
