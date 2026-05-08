@@ -106,14 +106,14 @@ async function parseRSS(feedUrl: string, sourceName: string) {
       "";
 
     const pubDate =
-      item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] ||
-      item.match(/<dc:date>(.*?)<\/dc:date>/)?.[1] ||
+      item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ||
+      item.match(/<dc:date>([\s\S]*?)<\/dc:date>/)?.[1] ||
       "";
 
     const author =
-      item.match(/<dc:creator><!\[CDATA\[(.*?)\]\]><\/dc:creator>/)?.[1] ||
-      item.match(/<dc:creator>(.*?)<\/dc:creator>/)?.[1] ||
-      item.match(/<author>(.*?)<\/author>/)?.[1] ||
+      item.match(/<dc:creator><!\[CDATA\[([\s\S]*?)\]\]><\/dc:creator>/)?.[1] ||
+      item.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/)?.[1] ||
+      item.match(/<author>([\s\S]*?)<\/author>/)?.[1] ||
       "";
 
     const image =
