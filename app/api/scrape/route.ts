@@ -91,8 +91,8 @@ async function parseRSS(feedUrl: string, sourceName: string) {
     const item = match[1];
 
     const title =
-      item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s)?.[1] ||
-      item.match(/<title>(.*?)<\/title>/s)?.[1] ||
+      item.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)?.[1] ||
+      item.match(/<title>([\s\S]*?)<\/title>/)?.[1] ||
       "";
 
     const rawLink =
