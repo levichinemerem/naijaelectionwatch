@@ -341,7 +341,7 @@ function Sidebar() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                 <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red }} />
-                <span style={{ fontFamily: F.mono, fontSize: 10, letterSpacing: "0.1em", color: C.red }}>LIVE</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, letterSpacing: "0.1em", color: C.brandMedium }}>LIVE</span>
               </div>
             </div>
           ))}
@@ -512,9 +512,9 @@ export default function NewsPage() {
           </p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
             {[
-              `${articles.length} Stories Published`,
-              `${SOURCES.length} Sources Monitored`,
-              "Updated Every Hour"
+              "8 Sources Monitored",
+              "Updated Every Hour",
+              "100% Independent"
             ].map(s => (
               <div key={s} style={{
                 fontFamily: F.mono, fontSize: 11, letterSpacing: "0.1em",
@@ -615,7 +615,7 @@ export default function NewsPage() {
               }}
               onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = C.brandDark; e.currentTarget.style.color = C.white; } }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = loading ? C.tertiary : C.brandDark; }}>
-                {loading ? "Loading…" : `Load More Stories (${totalFiltered - visible} remaining)`}
+                {loading ? "Loading…" : "Load More Stories"}
               </button>
             )}
           </div>

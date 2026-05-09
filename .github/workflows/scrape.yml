@@ -2,37 +2,19 @@ name: Daily Election Scrape
 
 on:
   schedule:
-    - cron: '0 8 * * *'   # 8:00 AM WAT
-    - cron: '0 16 * * *'  # 4:00 PM WAT
-    - cron: '0 0 * * *'   # 12:00 AM WAT
-  workflow_dispatch:      # Allow manual trigger from GitHub
+    - cron: '0 8 * * *'    # 9am WAT
+    - cron: '0 16 * * *'   # 5pm WAT
+    - cron: '0 0 * * *'    # 1am WAT
+  workflow_dispatch:        # Manual trigger from GitHub
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci --production=false
-
-      - name: Run Scraper (3x daily)
-        env:
-          SCRAPE_SECRET: ${{ secrets.SCRAPE_SECRET }}
+      - name: Trigger scraper
         run: |
-          echo "🚀 Starting scheduled scrape at $(date)"
-          RESPONSE=$(curl -X GET "https://naijaelectionwatch.vercel.app/api/scrape?secret=${{ secrets.SCRAPE_SECRET }}" \
+          echo "🚀 Starting scrape at $(date)"
+          curl -f "https://naijaelectionwatch.vercel.app/api/scrape?secret=${{ secrets.SCRAPE_SECRET }}" \
             -H "User-Agent: GitHub-Actions-Scraper/1.0" \
-            --fail --silent --show-error --write-out "%{http_code}")
-          echo "Scrape response: $RESPONSE"
-
-      - name: Job Summary
-        if: always()
-        run: echo "✅ Scrape job completed at $(date UTC)"
+            --silent --show-error
+          echo "✅ Scrape done"
