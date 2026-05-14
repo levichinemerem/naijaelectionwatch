@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import NewsletterForm from "@/app/components/NewsletterForm";
+import { supabase } from "@/app/lib/supabase";
 
 /* ─── DESIGN SYSTEM ─── */
 const C = {
@@ -28,7 +30,23 @@ const F = {
   mono:    "'JetBrains Mono', monospace",
 };
 
-/* ─── DATA ─── */
+/* ─── TYPES ─── */
+interface Article {
+  id: string;
+  title: string;
+  summary: string;
+  ai_summary: string | null;
+  category: string;
+  source: string;
+  published_at: string;
+  icon: string;
+  slug: string;
+  url: string;
+  image_url: string;
+  ai_bias: string | null;
+}
+
+/* ─── STATIC DATA ─── */
 const BREAKING = [
   "INEC releases new voter distribution data across 36 states",
   "Supreme Court dismisses suit on candidate eligibility",
@@ -37,19 +55,10 @@ const BREAKING = [
   "APC holds emergency NEC meeting in Abuja ahead of primaries",
 ];
 
-const STORIES = [
-  { tag: "POLITICS", title: "What the New Voter Data Means for the 2027 Elections",       summary: "INEC's latest figures reveal a 23% surge in youth registrations. We break down what the numbers mean for each geopolitical zone.", source: "Premium Times", time: "2h ago",  read: "5 min", icon: "🗳️" },
-  { tag: "ECONOMY",  title: "How Elections Influence Nigeria's Economy",                   summary: "Understanding the spending cycle, naira volatility, and investor sentiment in election years.",                                       source: "Vanguard",       time: "4h ago",  read: "4 min", icon: "📈" },
-  { tag: "SECURITY", title: "Election Security Update: 36 States Under Watch",            summary: "Security agencies share deployment strategy and risk assessment ahead of party primaries.",                                           source: "Channels TV",    time: "6h ago",  read: "3 min", icon: "🛡️" },
-  { tag: "POLITICS", title: "Northern Governors Reach Consensus on APC Ticket Strategy",  summary: "Closed-door summit in Kaduna produces a unified bloc ahead of the presidential primary.",                                            source: "ThisDay",        time: "8h ago",  read: "4 min", icon: "🏛️" },
-  { tag: "SOCIETY",  title: "Diaspora Nigerians Push for Overseas Voting Rights",          summary: "A coalition of 14 civil society groups files a fresh suit at the Federal High Court.",                                               source: "Guardian NG",    time: "10h ago", read: "3 min", icon: "🌍" },
-  { tag: "ECONOMY",  title: "How Campaign Spending Shapes the Naira Every Election Cycle", summary: "Economists track the predictable currency pressure that follows major party primaries.",                                              source: "Punch",          time: "12h ago", read: "4 min", icon: "💰" },
-];
-
 const EDUCATION = [
-  { label: "HOW IT WORKS",  title: "How Nigerian Elections Work",        desc: "A simple breakdown of INEC's process from registration to declaration.", icon: "🗳️" },
-  { label: "VOTING SYSTEM", title: "Understanding the Voting Systems",   desc: "Learn about plurality, majority and proportional representation.",        icon: "⚖️" },
-  { label: "KEY TERMS",     title: "Key Electoral Terms Explained",      desc: "Essential glossary every Nigerian voter should know before 2027.",         icon: "📖" },
+  { label: "HOW IT WORKS",  title: "How Nigerian Elections Work",      desc: "A simple breakdown of INEC's process from registration to declaration.", icon: "🗳️" },
+  { label: "VOTING SYSTEM", title: "Understanding the Voting Systems", desc: "Learn about plurality, majority and proportional representation.",        icon: "⚖️" },
+  { label: "KEY TERMS",     title: "Key Electoral Terms Explained",    desc: "Essential glossary every Nigerian voter should know before 2027.",         icon: "📖" },
 ];
 
 /* ─── PILL ─── */
@@ -94,23 +103,16 @@ function NavBar() {
         transition: "all 0.25s", padding: "0 5vw",
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
+          <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: C.brandDark, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+              <img src="/logo.png" alt="Naija Election Watch" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            </div>
+            <div style={{ lineHeight: 1.15 }}>
+              <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.2 }}>Naija Election Watch</div>
+              <div style={{ fontSize: 10, color: C.secondary, letterSpacing: "0.05em" }}>Tracking Democracy</div>
+            </div>
+          </a>
 
-          {/* Logo */}
-            <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 8, background: C.brandDark, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                <img 
-                  src="/logo.png" 
-                  alt="Naija Election Watch" 
-                  style={{ width: "100%", height: "100%", objectFit: "contain" }} 
-                />
-              </div>
-              <div style={{ lineHeight: 1.15 }}>
-                <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.body, letterSpacing: 0.2 }}>Naija Election Watch</div>
-                <div style={{ fontSize: 10, color: C.secondary, letterSpacing: "0.05em" }}>Tracking Democracy</div>
-              </div>
-            </a>
-
-          {/* Desktop nav */}
           <div className="nav-links-desktop" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
             {navLinks.map((item, i) => (
               <a key={item.label} href={item.href} style={{
@@ -129,7 +131,6 @@ function NavBar() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
           <div className="nav-cta-desktop" style={{ display: "flex", marginLeft: "auto" }}>
             <button style={{
               background: C.brandDark, border: "none", color: C.white,
@@ -147,7 +148,6 @@ function NavBar() {
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
             display: "none", background: "transparent",
             border: `1px solid ${C.divider}`, color: C.body,
@@ -163,7 +163,6 @@ function NavBar() {
         </div>
       </nav>
 
-      {/* Mobile panel */}
       <div className="mobile-panel" style={{
         position: "fixed", top: 0, right: 0, bottom: 0, width: 280,
         background: C.pageBg, borderLeft: `1px solid ${C.divider}`,
@@ -200,10 +199,6 @@ function NavBar() {
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           }}>
             Get Alerts
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-            </svg>
           </button>
         </div>
       </div>
@@ -338,9 +333,29 @@ function Ticker() {
 
 /* ─── NEWS FEED ─── */
 function NewsFeed() {
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter]   = useState("All");
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
   const filters = ["All", "Politics", "Economy", "Security", "Society"];
-  const visible = filter === "All" ? STORIES : STORIES.filter(s => s.tag === filter.toUpperCase());
+
+  useEffect(() => {
+    supabase
+      .from("articles")
+      .select("*")
+      .not("image_url", "is", null)
+      .neq("image_url", "")
+      .order("published_at", { ascending: false })
+      .limit(100)
+      .then(({ data, error }) => {
+        if (data) setArticles(data as Article[]);
+        if (error) console.error("Supabase fetch error:", error.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const visible = articles
+    .filter(a => filter === "All" || a.category === filter)
+    .slice(0, 6);
 
   return (
     <section style={{ background: C.pageBg, padding: "64px 5vw" }}>
@@ -373,83 +388,119 @@ function NewsFeed() {
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
-          {visible.map((s, i) => (
-            <article key={i} style={{
-              background: C.cardBg, border: `1px solid ${C.cardBorder}`,
-              borderRadius: 12, overflow: "hidden", cursor: "pointer",
-              transition: "box-shadow 0.2s, transform 0.2s",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
-              <div style={{
-                height: 180, background: "linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 44, borderBottom: `1px solid ${C.divider}`,
+        {/* Loading state */}
+        {loading && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} style={{
+                background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+                borderRadius: 12, overflow: "hidden",
               }}>
-                {s.icon}
-              </div>
-              <div style={{ padding: 20 }}>
-                <Pill text={s.tag} />
-                <h3 style={{
-                  fontFamily: F.display, fontSize: 17, fontWeight: 700, color: C.body,
-                  margin: "12px 0 8px", lineHeight: 1.35,
-                  display: "-webkit-box", WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical" as const, overflow: "hidden",
-                }}>
-                  {s.title}
-                </h3>
-                <p style={{
-                  fontSize: 14, color: C.secondary, margin: "0 0 20px", lineHeight: 1.65,
-                  display: "-webkit-box", WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical" as const, overflow: "hidden",
-                }}>
-                  {s.summary}
-                </p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: `1px solid ${C.divider}` }}>
-                  <span style={{ fontSize: 12, color: C.tertiary }}>{s.source} · {s.time}</span>
-                  <span style={{ fontSize: 12, color: C.brandMedium, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                    {s.read}
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-                    </svg>
-                  </span>
+                <div style={{ height: 180, background: "linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite" }} />
+                <div style={{ padding: 20 }}>
+                  <div style={{ height: 12, background: "#f0f0f0", borderRadius: 4, marginBottom: 12, width: "40%" }} />
+                  <div style={{ height: 18, background: "#f0f0f0", borderRadius: 4, marginBottom: 8 }} />
+                  <div style={{ height: 18, background: "#f0f0f0", borderRadius: 4, marginBottom: 8, width: "80%" }} />
+                  <div style={{ height: 14, background: "#f0f0f0", borderRadius: 4, width: "60%" }} />
                 </div>
               </div>
-            </article>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* Articles grid */}
+        {!loading && visible.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
+            {visible.map(a => (
+              <Link key={a.id} href={`/news/${a.slug}`} style={{ textDecoration: "none" }}>
+                <article style={{
+                  background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+                  borderRadius: 12, overflow: "hidden", cursor: "pointer", height: "100%",
+                  transition: "box-shadow 0.2s, transform 0.2s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
+                  {/* Image */}
+                  <div style={{ height: 180, overflow: "hidden", borderBottom: `1px solid ${C.divider}`, background: "#f0f0f0" }}>
+                    <img
+                      src={a.image_url}
+                      alt={a.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
+                      onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
+                      onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                      onError={e => {
+                        // hide broken image, show fallback
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.style.display = "flex";
+                          parent.style.alignItems = "center";
+                          parent.style.justifyContent = "center";
+                          parent.style.fontSize = "44px";
+                          parent.style.background = "linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)";
+                          e.currentTarget.style.display = "none";
+                          parent.innerHTML = a.icon;
+                        }
+                      }}
+                    />
+                  </div>
+                  <div style={{ padding: 20 }}>
+                    <Pill text={a.category} />
+                    <h3 style={{
+                      fontFamily: F.display, fontSize: 17, fontWeight: 700, color: C.body,
+                      margin: "12px 0 8px", lineHeight: 1.35,
+                      display: "-webkit-box", WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical" as const, overflow: "hidden",
+                    }}>
+                      {a.title}
+                    </h3>
+                    <p style={{
+                      fontSize: 14, color: C.secondary, margin: "0 0 20px", lineHeight: 1.65,
+                      display: "-webkit-box", WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical" as const, overflow: "hidden",
+                    }}>
+                      {a.ai_summary || a.summary}
+                    </p>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: `1px solid ${C.divider}` }}>
+                      <span style={{ fontSize: 12, color: C.tertiary }}>
+                        {a.source} · {new Date(a.published_at).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
+                      </span>
+                      <span style={{ fontSize: 12, color: C.brandMedium, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                        Read
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && visible.length === 0 && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: C.secondary }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>📰</div>
+            <div style={{ fontSize: 16 }}>No stories found. Check back soon.</div>
+          </div>
+        )}
 
         <div style={{ textAlign: "center", marginTop: 48 }}>
-          <a 
-            href="/news" 
-            style={{
-              textDecoration: "none", // Essential to remove the default link underline
-              background: "transparent", 
-              border: `1.5px solid ${C.brandDark}`,
-              color: C.brandDark, 
-              padding: "11px 36px", 
-              borderRadius: 8,
-              fontSize: 13, 
-              cursor: "pointer", 
-              fontWeight: 600,
-              display: "inline-flex", 
-              alignItems: "center", 
-              gap: 8, 
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={e => { 
-              e.currentTarget.style.background = C.brandDark; 
-              e.currentTarget.style.color = C.white; 
-            }}
-            onMouseLeave={e => { 
-              e.currentTarget.style.background = "transparent"; 
-              e.currentTarget.style.color = C.brandDark; 
-            }}
-          >
-            Load More Stories
+          <a href="/news" style={{
+            textDecoration: "none",
+            background: "transparent",
+            border: `1.5px solid ${C.brandDark}`,
+            color: C.brandDark,
+            padding: "11px 36px",
+            borderRadius: 8, fontSize: 13, cursor: "pointer", fontWeight: 600,
+            display: "inline-flex", alignItems: "center", gap: 8, transition: "all 0.2s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = C.brandDark; e.currentTarget.style.color = C.white; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.brandDark; }}>
+            View All Stories
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m6 9 6 6 6-6"/>
+              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
             </svg>
           </a>
         </div>
@@ -585,15 +636,10 @@ function Footer() {
   return (
     <footer style={{ background: C.brandDark, padding: "64px 5vw 32px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-
         <div style={{ marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <img 
-                  src="/logo.png" 
-                  alt="Naija Election Watch" 
-                  style={{ width: "100%", height: "100%", objectFit: "contain" }} 
-                />
+              <img src="/logo.png" alt="Naija Election Watch" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
             </div>
             <div style={{ lineHeight: 1.2 }}>
               <div style={{ fontFamily: F.display, fontSize: 16, fontWeight: 700, color: C.white }}>Naija Election Watch</div>
@@ -652,6 +698,7 @@ export default function Home() {
     <>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         @media (max-width: 768px) {
           .nav-links-desktop { display: none !important; }
           .nav-cta-desktop   { display: none !important; }
