@@ -431,7 +431,7 @@ export default function NewsPage() {
   const [filter, setFilter]       = useState<Category>("All");
   const [search, setSearch]       = useState("");
   const [sort, setSort]           = useState<"latest" | "oldest">("latest");
-  const [visible, setVisible]     = useState(12);
+  const [visible, setVisible]     = useState(20);
   const [loading, setLoading]     = useState(false);
   const [articles, setArticles]   = useState<Article[]>([]);
   const [dbLoading, setDbLoading] = useState(true);
@@ -467,7 +467,7 @@ export default function NewsPage() {
 
   const loadMore = () => {
     setLoading(true);
-    setTimeout(() => { setVisible(v => v + 6); setLoading(false); }, 800);
+    setTimeout(() => { setVisible(v => v + 10); setLoading(false); }, 800);
   };
 
   return (
@@ -554,7 +554,7 @@ export default function NewsPage() {
 
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {CATEGORIES.map(cat => (
-              <button key={cat} onClick={() => { setFilter(cat); setVisible(12); }} style={{
+              <button key={cat} onClick={() => { setFilter(cat); setVisible(20); }} style={{
                 fontSize: 12, fontWeight: filter === cat ? 700 : 500,
                 background: filter === cat ? C.brandDark : "transparent",
                 border: `1px solid ${filter === cat ? C.brandDark : C.divider}`,
