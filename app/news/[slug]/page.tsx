@@ -30,6 +30,30 @@ const F = {
   mono:    "'JetBrains Mono', monospace",
 };
 
+// Category banner configs for articles without images
+const CATEGORY_BANNERS: Record<string, { gradient: string; pattern: string; label: string }> = {
+  Politics: {
+    gradient: "linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%)",
+    pattern: "🏛️",
+    label: "POLITICS",
+  },
+  Economy: {
+    gradient: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%)",
+    pattern: "💹",
+    label: "ECONOMY",
+  },
+  Security: {
+    gradient: "linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #dc2626 100%)",
+    pattern: "🛡️",
+    label: "SECURITY",
+  },
+  Society: {
+    gradient: "linear-gradient(135deg, #4a1d96 0%, #7c3aed 50%, #8b5cf6 100%)",
+    pattern: "🌍",
+    label: "SOCIETY",
+  },
+};
+
 interface Article {
   id: string;
   title: string;
@@ -255,14 +279,45 @@ function Footer() {
   );
 }
 
+// Category banner shown when no image_url exists
+function CategoryBanner({ category, icon }: { category: string; icon: string }) {
+  const banner = CATEGORY_BANNERS[category] || CATEGORY_BANNERS["Politics"];
+  return (
+    <div style={{
+      height: 280, borderRadius: 12, overflow: "hidden",
+      background: banner.gradient,
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      marginBottom: 36, position: "relative",
+      border: `1px solid ${C.cardBorder}`,
+    }}>
+      {/* Subtle grid pattern overlay */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: `linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)`,
+        backgroundSize: "32px 32px",
+      }} />
+      <div style={{ fontSize: 56, marginBottom: 12, position: "relative" }}>{icon || banner.pattern}</div>
+      <div style={{
+        fontFamily: F.mono, fontSize: 11, fontWeight: 700,
+        letterSpacing: "0.2em", color: "rgba(255,255,255,0.7)",
+        textTransform: "uppercase" as const, position: "relative",
+      }}>
+        {banner.label}
+      </div>
+    </div>
+  );
+}
+
 export default function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const [article, setArticle]       = useState<Article | null>(null);
-  const [related, setRelated]       = useState<Article[]>([]);
+  const [article, setArticle]         = useState<Article | null>(null);
+  const [related, setRelated]         = useState<Article[]>([]);
   const [moreStories, setMoreStories] = useState<Article[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [notFound, setNotFound]     = useState(false);
-  const [copied, setCopied]         = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [notFound, setNotFound]       = useState(false);
+  const [copied, setCopied]           = useState(false);
+  const [imageError, setImageError]   = useState(false);
 
   useEffect(() => {
     supabase
@@ -350,13 +405,18 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   const authorInitials = article.author
     ? article.author.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()
     : article.source.slice(0, 2).toUpperCase();
+
   const decodeHtml = (html: string) => {
     const txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
   };
 
+  // Use ai_summary if available, otherwise RSS summary
   const displaySummary = decodeHtml(article.ai_summary || article.summary);
+  const hasAiSummary = !!article.ai_summary;
+  const showImage = article.image_url && !imageError;
+
   return (
     <>
       <style>{`
@@ -401,7 +461,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             <span style={{ fontSize: 12, color: C.tertiary }}>
               {new Date(article.published_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}
             </span>
-            {article.ai_summary && (
+            {hasAiSummary && (
               <>
                 <span style={{ color: C.tertiary, fontSize: 12 }}>·</span>
                 <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: C.brandMedium, background: C.mint, padding: "2px 8px", borderRadius: 999 }}>
@@ -425,13 +485,17 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             {article.title}
           </h1>
 
+          {/* Intro line — just source + date context, no summary text */}
           <p style={{
-            fontSize: 18, color: C.secondary, lineHeight: 1.7, marginBottom: 28,
+            fontSize: 15, color: C.secondary, lineHeight: 1.7, marginBottom: 28,
             borderLeft: `3px solid ${C.brandMedium}`, paddingLeft: 16,
           }}>
-            {displaySummary}
+            Reported by <strong style={{ color: C.body }}>{article.source}</strong> on{" "}
+            {new Date(article.published_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}.
+            Read the summary below, then continue to the full story.
           </p>
 
+          {/* Author + Share row */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             flexWrap: "wrap", gap: 12,
@@ -484,94 +548,100 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         <div className="article-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 48 }}>
 
           <div>
-            {/* AI Summary box */}
-            <div style={{
-              background: C.cardBg, border: `1px solid ${C.cardBorder}`,
-              borderLeft: `3px solid ${C.brandMedium}`,
-              borderRadius: 10, padding: "20px 24px", marginBottom: 36,
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 15 }}>✦</span>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: C.brandMedium, textTransform: "uppercase" as const }}>
-                  {article.ai_summary ? "AI Summary" : "Summary"}
-                </span>
-              </div>
-              <p style={{ fontSize: 14, color: C.secondary, lineHeight: 1.7, margin: 0 }}>{displaySummary}</p>
-            </div>
-
-            {/* Article image */}
-            <div style={{
-              height: 280, borderRadius: 12, overflow: "hidden",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 64, marginBottom: 36,
-              border: `1px solid ${C.cardBorder}`,
-              background: article.image_url ? "#000" : "linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)",
-            }}>
-              {article.image_url ? (
-                <img
-                  src={article.image_url}
-                  alt={article.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  onError={e => {
-                    e.currentTarget.style.display = "none";
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.style.background = "linear-gradient(135deg, #e8f0eb 0%, #d4e6d9 100%)";
-                      parent.innerHTML = article.icon;
-                      parent.style.fontSize = "64px";
-                      parent.style.display = "flex";
-                      parent.style.alignItems = "center";
-                      parent.style.justifyContent = "center";
-                    }
-                  }}
-                />
-              ) : (
-                <span>{article.icon}</span>
-              )}
-            </div>
-
-            {/* Body text */}
-            <div style={{ maxWidth: 680 }}>
-              <p style={{ fontSize: 16, color: C.secondary, lineHeight: 1.85, marginBottom: 24 }}>
-                {decodeHtml(article.summary)}
-              </p>
-
-              {/* Read full story CTA */}
+            {/* AI Summary box — only shown when ai_summary exists */}
+            {hasAiSummary && (
               <div style={{
                 background: C.cardBg, border: `1px solid ${C.cardBorder}`,
-                borderRadius: 10, padding: "20px 24px", marginTop: 32,
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                flexWrap: "wrap", gap: 12,
+                borderLeft: `3px solid ${C.brandMedium}`,
+                borderRadius: 10, padding: "20px 24px", marginBottom: 36,
               }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: C.body, marginBottom: 4 }}>Read the full story</div>
-                  <div style={{ fontSize: 12, color: C.secondary }}>
-                    Originally reported by <strong>{article.source}</strong>
-                  </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 15 }}>✦</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: C.brandMedium, textTransform: "uppercase" as const }}>
+                    AI Summary
+                  </span>
                 </div>
-                
-                <a href={article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    background: C.brandDark, color: C.white,
-                    padding: "10px 20px", borderRadius: 8,
-                    textDecoration: "none", fontSize: 13, fontWeight: 700,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                  }}>
-                  Read on {article.source}
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/>
-                    <line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                </a>
+                <p style={{ fontSize: 14, color: C.secondary, lineHeight: 1.7, margin: 0 }}>{displaySummary}</p>
               </div>
+            )}
+
+            {/* RSS summary box — only shown when NO ai_summary */}
+            {!hasAiSummary && (
+              <div style={{
+                background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+                borderLeft: `3px solid ${C.tertiary}`,
+                borderRadius: 10, padding: "20px 24px", marginBottom: 36,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: C.secondary, textTransform: "uppercase" as const }}>
+                    Summary
+                  </span>
+                </div>
+                <p style={{ fontSize: 14, color: C.secondary, lineHeight: 1.7, margin: 0 }}>
+                  {decodeHtml(article.summary)}
+                </p>
+              </div>
+            )}
+
+            {/* Image or category banner */}
+            {showImage ? (
+              <div style={{
+                height: 280, borderRadius: 12, overflow: "hidden",
+                marginBottom: 36, border: `1px solid ${C.cardBorder}`,
+                background: "#000",
+              }}>
+                <img
+                  src={article.image_url!}
+                  alt={article.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={() => setImageError(true)}
+                />
+              </div>
+            ) : (
+              <CategoryBanner category={article.category} icon={article.icon} />
+            )}
+
+            {/* Read full story CTA — this is the only place the story link appears */}
+            <div style={{
+              background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+              borderRadius: 10, padding: "24px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              flexWrap: "wrap", gap: 12, marginBottom: 48,
+            }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.body, marginBottom: 4 }}>
+                  Read the full story
+                </div>
+                <div style={{ fontSize: 13, color: C.secondary }}>
+                  Originally reported by <strong>{article.source}</strong>
+                </div>
+              </div>
+              <a
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: C.brandDark, color: C.white,
+                  padding: "12px 24px", borderRadius: 8,
+                  textDecoration: "none", fontSize: 13, fontWeight: 700,
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = C.brandMedium; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = C.brandDark; }}
+              >
+                Continue on {article.source}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
             </div>
 
             {/* Related stories */}
             {related.length > 0 && (
-              <div style={{ marginTop: 48 }}>
+              <div>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 20 }}>
                   Related Stories
                 </div>
@@ -684,6 +754,6 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
       </div>
 
       <Footer />
-   </>
+    </>
   );
 }
