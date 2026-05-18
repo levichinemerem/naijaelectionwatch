@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/app/lib/supabase";
 
@@ -11,7 +10,7 @@ export async function GET(req: Request) {
   // Get articles without AI summaries
   const { data: articles, error: fetchError } = await supabaseAdmin
     .from("articles")
-    .select("id, slug, title, summary, source, category")
+    .select("id, title, summary, source, category")
     .is("ai_summary", null)
     .order("scraped_at", { ascending: false })
     .limit(10);
@@ -26,7 +25,6 @@ export async function GET(req: Request) {
 
   let count = 0;
   const errors: string[] = [];
-  const updatedSlugs = new Set<string>();
 
   for (const article of articles) {
     try {
@@ -84,16 +82,10 @@ Content: ${article.summary}`,
         errors.push(`Article ${article.id}: ${updateError.message}`);
       } else {
         count++;
-        if (article.slug) updatedSlugs.add(article.slug);
       }
     } catch (e: unknown) {
       errors.push(`Article ${article.id}: ${e instanceof Error ? e.message : String(e)}`);
     }
-  }
-
-  if (count > 0) {
-    revalidatePath("/news");
-    for (const slug of updatedSlugs) revalidatePath(`/news/${slug}`);
   }
 
   return NextResponse.json({

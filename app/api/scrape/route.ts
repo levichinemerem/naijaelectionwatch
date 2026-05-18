@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/app/lib/supabase";
 
@@ -174,8 +173,6 @@ export async function GET(req: Request) {
 
   let totalSaved = 0;
   let totalSkipped = 0;
-  const updatedSlugs = new Set<string>();
-
   const errors: string[] = [];
   const perSource: Record<string, number> = {};
 
@@ -212,7 +209,6 @@ export async function GET(req: Request) {
         } else if (status === 201) {
           totalSaved++;
           perSource[source.name] = (perSource[source.name] || 0) + 1;
-          updatedSlugs.add(slug);
         } else {
           totalSkipped++;
         }
@@ -231,11 +227,6 @@ export async function GET(req: Request) {
 
   const duration = Date.now() - startTime;
   console.log(`[SCRAPE] ✅ Done in ${duration}ms | Saved: ${totalSaved} | Skipped: ${totalSkipped} | Errors: ${errors.length}`);
-
-  if (totalSaved > 0) {
-    revalidatePath("/news");
-    for (const slug of updatedSlugs) revalidatePath(`/news/${slug}`);
-  }
 
   return NextResponse.json({
     success: true,
