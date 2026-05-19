@@ -8,8 +8,21 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Naija Election Watch — Tracking Democracy",
-  description: "Nigeria's most advanced election intelligence platform",
+  title: {
+    default: "Naija Election Watch — Nigeria's 2027 Election Intelligence Platform",
+    template: "%s | Naija Election Watch",
+  },
+  description:
+    "Real-time Nigerian election news, verified data, and civic education for the 2027 elections. Track INEC updates, candidate profiles, and results across all 36 states.",
+  metadataBase: new URL("https://www.naijaelectionwatch.com"),
+  alternates: {
+    canonical: "https://www.naijaelectionwatch.com",
+  },
+  openGraph: {
+    siteName: "Naija Election Watch",
+    locale: "en_NG",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

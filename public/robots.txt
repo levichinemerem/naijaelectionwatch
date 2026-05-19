@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Block Next.js internals and API routes
+Disallow: /_next/
+Disallow: /api/
+
+# Block query-string variants to avoid duplicate indexing
+Disallow: /*?*
+
+Sitemap: https://www.naijaelectionwatch.com/sitemap.xml
