@@ -59,7 +59,7 @@ export async function generateStaticParams() {
     .select("slug")
     .order("published_at", { ascending: false })
     .limit(300);
-  return (data ?? []).map((row) => ({ slug: row.slug as string }));
+  return (data ?? []).map((row: { slug: string }) => ({ slug: row.slug }));
 }
 
 export async function generateMetadata({
