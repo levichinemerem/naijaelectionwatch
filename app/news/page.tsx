@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { supabaseAdmin } from "@/app/lib/supabase";
 import NewsInteractive from "./NewsInteractive";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 export const revalidate = 28800;
 
@@ -9,6 +10,28 @@ export const metadata: Metadata = {
   description:
     "Verified, AI-summarised election news from Nigeria's most trusted outlets. Updated every 8 hours. Independent coverage across all parties, states, and issues.",
   alternates: { canonical: "https://www.naijaelectionwatch.com/news" },
+  openGraph: {
+    title: "Election News Nigeria — Latest 2027 Election Updates | Naija Election Watch",
+    description:
+      "Verified, AI-summarised election news from Nigeria's most trusted outlets. Updated every 8 hours. Independent coverage across all parties, states, and issues.",
+    url: "https://www.naijaelectionwatch.com/news",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Naija Election Watch — Nigeria Election News",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Election News Nigeria — Latest 2027 Election Updates | Naija Election Watch",
+    description:
+      "Verified, AI-summarised election news from Nigeria's most trusted outlets. Updated every 8 hours. Independent coverage across all parties, states, and issues.",
+    images: ["/og-image.png"],
+  },
 };
 
 export type Article = {
@@ -46,6 +69,8 @@ export default async function NewsPage() {
 
   return (
     <main>
+      <BreadcrumbSchema pathname="/news" />
+
       {/* ── PAGE HEADER: server-rendered, fully crawlable ── */}
       <div style={{ paddingTop: 64, background: "#1B4332", position: "relative", overflow: "hidden" }}>
         <div style={{

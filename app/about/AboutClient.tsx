@@ -29,7 +29,7 @@ const F = {
   mono:    "'JetBrains Mono', monospace",
 };
 
-/* ─── DATA (unchanged) ─── */
+/* ─── DATA ─── */
 const NAV_LINKS = [
   { label: "Home",      href: "/" },
   { label: "News",      href: "/news" },
@@ -59,7 +59,7 @@ const FAQS = [
   { q: "Is Naija Election Watch affiliated with any political party?",  a: "Absolutely not. We have zero affiliation with any political party, candidate, campaign, or government body. We cover everyone — APC, PDP, Labour Party, and all others — with the same critical lens." },
   { q: "Who funds this platform?",                                       a: "Naija Election Watch is an independent platform. We are funded through advertising, newsletter sponsorships, and reader support — not by political actors or government agencies." },
   { q: "How do you ensure your AI summaries are accurate?",              a: "Our AI engine is trained to summarise, not editorialize. Every summary is grounded in the source article. We include a link to the original report so you can always verify what you're reading." },
-  { q: "Can I report an error or inaccuracy?",                           a: "Yes — and we encourage it. If you spot something wrong, email us immediately at hello@naijaelectionwatch.ng. Corrections are published transparently." },
+  { q: "Can I report an error or inaccuracy?",                           a: "Yes — and we encourage it. If you spot something wrong, email us at hello@naijaelectionwatch.com. Corrections are published transparently." },
   { q: "Do you cover state-level elections too?",                        a: "Yes. While the 2027 presidential election is our primary focus, we cover governorship races, senatorial contests, and state house elections across all 36 states." },
   { q: "How often is the site updated?",                                 a: "Our news feed updates continuously. Major stories are processed and published within minutes of breaking. Daily briefing newsletters go out every morning at 7am WAT." },
 ];
@@ -69,6 +69,63 @@ const WHAT_WE_ARE_NOT = [
   { title: "Not a propaganda outlet",      desc: "We are not funded by political interests and we do not publish sponsored political content disguised as news." },
   { title: "Not a replacement for voting", desc: "We exist to make you a more informed citizen — but democracy requires your actual participation. Register. Show up. Vote." },
   { title: "Not infallible",               desc: "We use advanced technology, but technology makes mistakes. We correct errors when they are identified, publicly and without excuse." },
+];
+
+const SOCIAL_LINKS = [
+  {
+    platform: "X (Twitter)",
+    handle: "@electionwatchn",
+    href: "https://x.com/electionwatchn",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.635 5.903-5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Facebook",
+    handle: "Naija Election Watch",
+    href: "https://facebook.com/naijaelectionwatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Telegram",
+    handle: "@NaijaElectionWatch",
+    href: "https://t.me/NaijaElectionWatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+      </svg>
+    ),
+  },
+];
+
+/* ─── Task 5.1 — Editorial team data ─── */
+const EDITORIAL_STANDARDS = [
+  {
+    icon: "📋",
+    title: "Source-grounded summaries",
+    desc: "Every piece of content published on Naija Election Watch is derived directly from established Nigerian media outlets. Our team does not generate original reporting — we summarise, contextualise, and cite.",
+  },
+  {
+    icon: "⚖️",
+    title: "Political neutrality",
+    desc: "Our editorial team applies identical scrutiny to all parties, candidates, and regions. No story is buried, softened, or amplified because of political affiliation. All parties are covered with the same critical lens.",
+  },
+  {
+    icon: "🔁",
+    title: "Transparent corrections",
+    desc: "When errors occur — and they do — we correct them publicly, promptly, and without excuse. Corrections are noted inline on affected content. We do not silently edit or delete inaccurate material.",
+  },
+  {
+    icon: "🔒",
+    title: "Editorial independence",
+    desc: "No advertiser, sponsor, government body, or political actor has any influence over what we publish or how we frame stories. Editorial decisions are made solely on the basis of public interest and accuracy.",
+  },
 ];
 
 /* ─── NAVBAR ─── */
@@ -93,7 +150,6 @@ function NavBar() {
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", height: 64, gap: 8 }}>
 
-          {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, marginRight: 32 }}>
             <Image src="/logo.png" alt="Naija Election Watch" width={36} height={36} style={{ borderRadius: 8, objectFit: "contain" }} />
             <div style={{ lineHeight: 1.15 }}>
@@ -102,7 +158,6 @@ function NavBar() {
             </div>
           </Link>
 
-          {/* Desktop nav */}
           <div className="nav-links-desktop" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
             {NAV_LINKS.map((item) => {
               const isActive = item.label === "About Us";
@@ -124,7 +179,6 @@ function NavBar() {
             })}
           </div>
 
-          {/* Desktop CTA */}
           <div className="nav-cta-desktop" style={{ display: "flex", marginLeft: "auto" }}>
             <button style={{
               background: C.brandDark, border: "none", color: C.white,
@@ -142,7 +196,6 @@ function NavBar() {
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
             display: "none", background: "transparent",
             border: `1px solid ${C.divider}`, color: C.body,
@@ -158,7 +211,6 @@ function NavBar() {
         </div>
       </nav>
 
-      {/* Mobile panel */}
       <div className="mobile-panel" style={{
         position: "fixed", top: 0, right: 0, bottom: 0, width: 280,
         background: C.pageBg, borderLeft: `1px solid ${C.divider}`,
@@ -254,17 +306,24 @@ function Footer() {
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
           <div style={{ display: "flex", gap: 10 }}>
-            {["𝕏", "in", "f", "▶"].map((icon, i) => (
-              <div key={i} style={{
-                width: 36, height: 36, borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, cursor: "pointer", color: C.white70, transition: "all 0.2s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}>
-                {icon}
-              </div>
+            {SOCIAL_LINKS.map((s) => (
+              <a
+                key={s.platform}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.platform}
+                style={{
+                  width: 36, height: 36, borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: C.white70, transition: "all 0.2s", textDecoration: "none",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}
+              >
+                {s.icon}
+              </a>
             ))}
           </div>
           <div style={{ fontSize: 12, color: C.white70 }}>© 2026 Naija Election Watch. All rights reserved.</div>
@@ -280,7 +339,7 @@ export default function AboutPage() {
   const [emailCopied, setEmailCopied] = useState(false);
 
   const handleEmailCopy = () => {
-    navigator.clipboard.writeText("hello@naijaelectionwatch.ng");
+    navigator.clipboard.writeText("hello@naijaelectionwatch.com");
     setEmailCopied(true);
     setTimeout(() => setEmailCopied(false), 2000);
   };
@@ -299,6 +358,7 @@ export default function AboutPage() {
           .contact-grid      { grid-template-columns: 1fr !important; }
           .footer-grid       { grid-template-columns: 1fr !important; gap: 32px !important; }
           .mission-grid      { grid-template-columns: 1fr !important; }
+          .editorial-grid    { grid-template-columns: 1fr !important; }
         }
         @media (min-width: 769px) {
           .mobile-panel { display: none !important; }
@@ -364,7 +424,6 @@ export default function AboutPage() {
             Nigerian political news is scattered, biased, and buried in noise. Election data exists — but nobody makes it accessible. We built Naija Election Watch to change that. One platform. Every story. No agenda.
           </p>
 
-          {/* Stats row */}
           <div className="stat-row" style={{
             display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
             border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12,
@@ -412,7 +471,6 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Mission pillars */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {[
                 { icon: "🔍", title: "Clarity over noise",      desc: "We cut through the daily storm of Nigerian political content to surface what actually matters — explained in plain language." },
@@ -472,7 +530,6 @@ export default function AboutPage() {
             ))}
           </div>
 
-          {/* Methodology note */}
           <div style={{
             marginTop: 40, background: C.cardBg,
             border: `1px solid ${C.cardBorder}`,
@@ -533,8 +590,101 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── WHAT WE ARE NOT ── */}
+      {/* ── EDITORIAL TEAM — Task 5.1 ── */}
       <section style={{ background: C.newsletterBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}` }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.brandMedium, textTransform: "uppercase" as const, marginBottom: 16 }}>
+            EDITORIAL TEAM
+          </div>
+
+          <div className="mission-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "flex-start" }}>
+
+            {/* Left — team description */}
+            <div>
+              <h2 style={{ fontFamily: F.display, fontWeight: 700, fontSize: "clamp(1.8rem, 3vw, 2.5rem)", letterSpacing: "-0.03em", color: C.body, marginBottom: 20 }}>
+                Who is behind every guide and summary.
+              </h2>
+              <p style={{ fontSize: 16, color: C.secondary, lineHeight: 1.8, marginBottom: 20 }}>
+                All content on Naija Election Watch — from news summaries to civic education guides — is produced and reviewed by the <strong style={{ color: C.body }}>Naija Election Watch Editorial Team</strong>: a group of Nigerian journalists, civic educators, and policy researchers committed to independent, factual election coverage.
+              </p>
+              <p style={{ fontSize: 16, color: C.secondary, lineHeight: 1.8, marginBottom: 20 }}>
+                Our team reviews every AI-generated summary before it is published. Civic education guides are written from scratch against primary sources including INEC guidelines, the Electoral Act 2022, and established civic education frameworks.
+              </p>
+              <p style={{ fontSize: 16, color: C.secondary, lineHeight: 1.8 }}>
+                We cover all 36 states and the FCT, with particular attention to underreported constituencies and communities that are rarely centred in national political coverage.
+              </p>
+
+              {/* Attribution badge */}
+              <div style={{
+                marginTop: 32,
+                display: "inline-flex", alignItems: "center", gap: 12,
+                background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+                borderLeft: `3px solid ${C.brandMedium}`,
+                borderRadius: 10, padding: "14px 20px",
+              }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: "50%",
+                  background: C.mint,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.brandDark} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.body }}>
+                    Naija Election Watch Editorial Team
+                  </div>
+                  <div style={{ fontSize: 11, color: C.secondary, marginTop: 2 }}>
+                    All guides, summaries, and civic content · Est. 2026
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right — editorial standards */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {EDITORIAL_STANDARDS.map(item => (
+                <div key={item.title} style={{
+                  background: C.cardBg, border: `1px solid ${C.cardBorder}`,
+                  borderRadius: 10, padding: 20,
+                  display: "flex", gap: 14, alignItems: "flex-start",
+                  transition: "box-shadow 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.06)"}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
+                  <span style={{ fontSize: 22, flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.body, marginBottom: 5 }}>
+                      {item.title}
+                    </div>
+                    <div style={{ fontSize: 13, color: C.secondary, lineHeight: 1.7 }}>
+                      {item.desc}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{
+                background: C.mint, borderRadius: 10, padding: 18,
+                border: `1px solid rgba(27,67,50,0.12)`,
+              }}>
+                <div style={{ fontSize: 12, color: C.mintText, lineHeight: 1.7 }}>
+                  <strong>Report an error:</strong> If you spot inaccurate content, email{" "}
+                  <a href="mailto:hello@naijaelectionwatch.com" style={{ color: C.brandDark, fontWeight: 700, textDecoration: "none" }}>
+                    hello@naijaelectionwatch.com
+                  </a>
+                  {" "}with the page URL and the specific correction. We respond within 24 hours and publish corrections transparently.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHAT WE ARE NOT ── */}
+      <section style={{ background: C.pageBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}` }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.red, textTransform: "uppercase" as const, marginBottom: 16 }}>
             WHAT WE ARE NOT
@@ -575,7 +725,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ background: C.pageBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}` }}>
+      <section style={{ background: C.newsletterBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}` }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.brandMedium, textTransform: "uppercase" as const, marginBottom: 16 }}>
             FAQ
@@ -621,7 +771,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── CONTACT ── */}
-      <section style={{ background: C.newsletterBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}`, position: "relative", overflow: "hidden" }}>
+      <section style={{ background: C.pageBg, padding: "80px 5vw", borderTop: `1px solid ${C.divider}`, position: "relative", overflow: "hidden" }}>
         <div style={{
           position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
           width: "50vw", height: "30vw", borderRadius: "50%",
@@ -641,7 +791,6 @@ export default function AboutPage() {
 
           <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
 
-            {/* Left — contact info */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* Email */}
@@ -650,8 +799,8 @@ export default function AboutPage() {
                   EMAIL
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                  <a href="mailto:hello@naijaelectionwatch.ng" style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.body, textDecoration: "none" }}>
-                    hello@naijaelectionwatch.ng
+                  <a href="mailto:hello@naijaelectionwatch.com" style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.body, textDecoration: "none" }}>
+                    hello@naijaelectionwatch.com
                   </a>
                   <button onClick={handleEmailCopy} style={{
                     fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
@@ -675,18 +824,13 @@ export default function AboutPage() {
                   FOLLOW US
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {[
-                    { platform: "X (Twitter)", handle: "@naijaelectionwatch", icon: "𝕏" },
-                    { platform: "Instagram",   handle: "@naijaelectionwatch", icon: "📷" },
-                    { platform: "Facebook",    handle: "Naija Election Watch", icon: "f" },
-                    { platform: "Telegram",    handle: "NaijaElectionWatch",   icon: "✈️" },
-                  ].map(s => (
-                    <a key={s.platform} href="#" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
+                  {SOCIAL_LINKS.map(s => (
+                    <a key={s.platform} href={s.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
                       <div style={{
                         width: 34, height: 34, borderRadius: 8,
                         background: C.newsletterBg, border: `1px solid ${C.divider}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 14, flexShrink: 0,
+                        fontSize: 14, flexShrink: 0, color: C.body,
                       }}>
                         {s.icon}
                       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 export const metadata: Metadata = {
   title: "Naija Election Watch — Nigeria's 2027 Election Intelligence Platform",
@@ -32,6 +33,30 @@ export const metadata: Metadata = {
   },
 };
 
+const speakableSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://www.naijaelectionwatch.com/#webpage",
+  url: "https://www.naijaelectionwatch.com",
+  name: "Naija Election Watch — Nigeria's 2027 Election Intelligence Platform",
+  isPartOf: {
+    "@id": "https://www.naijaelectionwatch.com/#website",
+  },
+  speakable: {
+    "@type": "SpeakableSpecification",
+    cssSelector: ["h1", "section p"],
+  },
+};
+
 export default function Home() {
-  return <HomeClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+      />
+      <BreadcrumbSchema pathname="/" />
+      <HomeClient />
+    </>
+  );
 }

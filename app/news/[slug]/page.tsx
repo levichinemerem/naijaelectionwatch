@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/app/lib/supabase";
 import ArticleInteractive from "./ArticleInteractive";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 export const revalidate = 28800;
 export const dynamicParams = true;
@@ -85,7 +86,9 @@ export async function generateMetadata({
       type: "article",
       publishedTime: article.published_at,
       authors: [article.author || article.source],
-      ...(article.image_url && { images: [{ url: article.image_url, width: 1200, height: 630 }] }),
+      ...(article.image_url && {
+        images: [{ url: article.image_url, width: 1200, height: 630 }],
+      }),
     },
     twitter: {
       card: "summary_large_image",
@@ -111,5 +114,58 @@ export default async function ArticlePage({
 
   const related = await getRelated(article.category, slug);
 
-  return <ArticleInteractive article={article} related={related} moreStories={moreStories} />;
+  const canonical = `https://www.naijaelectionwatch.com/news/${article.slug}`;
+  const description = article.ai_summary || article.summary;
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    description,
+    url: canonical,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonical,
+    },
+    datePublished: article.published_at,
+    dateModified: article.published_at,
+    author: article.author
+      ? { "@type": "Person", name: article.author }
+      : { "@type": "Organization", name: article.source },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.naijaelectionwatch.com/#organization",
+      name: "Naija Election Watch",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.naijaelectionwatch.com/logo.png",
+      },
+    },
+    image: {
+      "@type": "ImageObject",
+      url: article.image_url ?? "https://www.naijaelectionwatch.com/og-image.png",
+      width: 1200,
+      height: 630,
+    },
+    articleSection: article.category,
+    isAccessibleForFree: true,
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.naijaelectionwatch.com/#website",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <BreadcrumbSchema
+        pathname={`/news/${article.slug}`}
+        articleTitle={article.title}
+      />
+      <ArticleInteractive article={article} related={related} moreStories={moreStories} />
+    </>
+  );
 }

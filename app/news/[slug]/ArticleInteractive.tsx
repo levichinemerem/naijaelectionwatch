@@ -31,6 +31,37 @@ const F = {
   mono:    "'JetBrains Mono', monospace",
 };
 
+/* ─── SOCIAL LINKS ─── */
+const SOCIAL_LINKS = [
+  {
+    platform: "X (Twitter)",
+    href: "https://x.com/electionwatchn",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.635 5.903-5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Facebook",
+    href: "https://facebook.com/naijaelectionwatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Telegram",
+    href: "https://t.me/NaijaElectionWatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+      </svg>
+    ),
+  },
+];
+
 const CATEGORY_BANNERS: Record<string, { gradient: string; pattern: string; label: string }> = {
   Politics: {
     gradient: "linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%)",
@@ -79,12 +110,6 @@ function Pill({ text }: { text: string }) {
 function NavBar() {
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // Use a ref-based approach to avoid useEffect import issues
-  if (typeof window !== "undefined") {
-    // Only attach once via module-level side effect pattern avoided;
-    // instead we use onScroll via inline handler on a wrapper div
-  }
 
   return (
     <>
@@ -248,17 +273,24 @@ function Footer() {
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
           <div style={{ display: "flex", gap: 10 }}>
-            {["𝕏", "in", "f", "▶"].map((icon, i) => (
-              <div key={i} style={{
-                width: 36, height: 36, borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, cursor: "pointer", color: C.white70, transition: "all 0.2s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}>
-                {icon}
-              </div>
+            {SOCIAL_LINKS.map((s) => (
+              <a
+                key={s.platform}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.platform}
+                style={{
+                  width: 36, height: 36, borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: C.white70, transition: "all 0.2s", textDecoration: "none",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}
+              >
+                {s.icon}
+              </a>
             ))}
           </div>
           <div style={{ fontSize: 12, color: C.white70 }}>© 2026 Naija Election Watch. All rights reserved.</div>
@@ -330,6 +362,10 @@ export default function ArticleInteractive({
   const displaySummary = decodeHtml(article.ai_summary || article.summary);
   const hasAiSummary   = !!article.ai_summary;
   const showImage      = article.image_url && !imageError;
+
+  const pageUrl = typeof window !== "undefined" ? window.location.href : `https://www.naijaelectionwatch.com/news/${article.slug}`;
+  const shareOnX = `https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(article.title)}`;
+  const shareOnFacebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
 
   return (
     <>
@@ -432,25 +468,64 @@ export default function ArticleInteractive({
               </div>
             </div>
 
+            {/* Share buttons */}
             <div style={{ display: "flex", gap: 8 }}>
-              {([["𝕏", "Share on X"], ["f", "Facebook"], ["🔗", "Copy link"]] as [string, string][]).map(([icon, label]) => (
-                <button
-                  key={label}
-                  onClick={label === "Copy link" ? handleCopy : undefined}
-                  style={{
-                    fontSize: 12, fontWeight: 500, background: "transparent",
-                    border: `1px solid ${C.divider}`,
-                    color: label === "Copy link" && copied ? C.brandMedium : C.secondary,
-                    padding: "7px 12px", borderRadius: 7,
-                    cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = C.brandDark; e.currentTarget.style.color = C.brandDark; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = C.divider; e.currentTarget.style.color = label === "Copy link" && copied ? C.brandMedium : C.secondary; }}>
-                  <span>{icon}</span>
-                  <span className="share-label">{label === "Copy link" && copied ? "Copied!" : label}</span>
-                </button>
-              ))}
+              <a
+                href={shareOnX}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: 12, fontWeight: 500,
+                  border: `1px solid ${C.divider}`,
+                  color: C.secondary, padding: "7px 12px", borderRadius: 7,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                  transition: "all 0.2s", textDecoration: "none", background: "transparent",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.brandDark; e.currentTarget.style.color = C.brandDark; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.divider; e.currentTarget.style.color = C.secondary; }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.635 5.903-5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                <span className="share-label">Share on X</span>
+              </a>
+
+              <a
+                href={shareOnFacebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: 12, fontWeight: 500,
+                  border: `1px solid ${C.divider}`,
+                  color: C.secondary, padding: "7px 12px", borderRadius: 7,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                  transition: "all 0.2s", textDecoration: "none", background: "transparent",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.brandDark; e.currentTarget.style.color = C.brandDark; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.divider; e.currentTarget.style.color = C.secondary; }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span className="share-label">Facebook</span>
+              </a>
+
+              <button
+                onClick={handleCopy}
+                style={{
+                  fontSize: 12, fontWeight: 500, background: "transparent",
+                  border: `1px solid ${copied ? C.brandMedium : C.divider}`,
+                  color: copied ? C.brandMedium : C.secondary,
+                  padding: "7px 12px", borderRadius: 7,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={e => { if (!copied) { e.currentTarget.style.borderColor = C.brandDark; e.currentTarget.style.color = C.brandDark; } }}
+                onMouseLeave={e => { if (!copied) { e.currentTarget.style.borderColor = C.divider; e.currentTarget.style.color = C.secondary; } }}
+              >
+                <span>🔗</span>
+                <span className="share-label">{copied ? "Copied!" : "Copy link"}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -461,7 +536,6 @@ export default function ArticleInteractive({
         <div className="article-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 48 }}>
 
           <div>
-            {/* AI Summary box */}
             {hasAiSummary && (
               <div style={{
                 background: C.cardBg, border: `1px solid ${C.cardBorder}`,
@@ -478,7 +552,6 @@ export default function ArticleInteractive({
               </div>
             )}
 
-            {/* RSS summary box — only when no ai_summary */}
             {!hasAiSummary && (
               <div style={{
                 background: C.cardBg, border: `1px solid ${C.cardBorder}`,
@@ -496,7 +569,6 @@ export default function ArticleInteractive({
               </div>
             )}
 
-            {/* Image or category banner */}
             {showImage ? (
               <div style={{
                 height: 280, borderRadius: 12, overflow: "hidden",
@@ -514,7 +586,6 @@ export default function ArticleInteractive({
               <CategoryBanner category={article.category} icon={article.icon} />
             )}
 
-            {/* Read full story CTA */}
             <div style={{
               background: C.cardBg, border: `1px solid ${C.cardBorder}`,
               borderRadius: 10, padding: "24px",
@@ -552,7 +623,6 @@ export default function ArticleInteractive({
               </a>
             </div>
 
-            {/* Related stories */}
             {related.length > 0 && (
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.body, textTransform: "uppercase" as const, marginBottom: 20 }}>
@@ -590,7 +660,6 @@ export default function ArticleInteractive({
 
           {/* ── SIDEBAR ── */}
           <aside className="sidebar" style={{ position: "sticky", top: 90, alignSelf: "start", display: "flex", flexDirection: "column", gap: 20 }}>
-
             <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 12, padding: 22 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: "50%", background: C.mint,
@@ -661,7 +730,6 @@ export default function ArticleInteractive({
                 ))}
               </div>
             </div>
-
           </aside>
         </div>
       </div>

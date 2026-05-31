@@ -30,6 +30,37 @@ const F = {
   mono:    "'JetBrains Mono', monospace",
 };
 
+/* ─── SOCIAL LINKS ─── */
+const SOCIAL_LINKS = [
+  {
+    platform: "X (Twitter)",
+    href: "https://x.com/electionwatchn",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.635 5.903-5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Facebook",
+    href: "https://facebook.com/naijaelectionwatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+    ),
+  },
+  {
+    platform: "Telegram",
+    href: "https://t.me/NaijaElectionWatch",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+      </svg>
+    ),
+  },
+];
+
 /* ─── TYPES ─── */
 interface Article {
   id: string;
@@ -333,9 +364,9 @@ function Ticker() {
 
 /* ─── NEWS FEED ─── */
 function NewsFeed() {
-  const [filter, setFilter]   = useState("All");
+  const [filter, setFilter]     = useState("Politics");
   const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
   const filters = ["All", "Politics", "Economy", "Security", "Society"];
 
   useEffect(() => {
@@ -388,7 +419,6 @@ function NewsFeed() {
           ))}
         </div>
 
-        {/* Loading state */}
         {loading && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
             {[...Array(6)].map((_, i) => (
@@ -408,7 +438,6 @@ function NewsFeed() {
           </div>
         )}
 
-        {/* Articles grid */}
         {!loading && visible.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
             {visible.map(a => (
@@ -420,7 +449,6 @@ function NewsFeed() {
                 }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
-                  {/* Image */}
                   <div style={{ height: 180, overflow: "hidden", borderBottom: `1px solid ${C.divider}`, background: "#f0f0f0" }}>
                     <img
                       src={a.image_url}
@@ -429,7 +457,6 @@ function NewsFeed() {
                       onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
                       onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
                       onError={e => {
-                        // hide broken image, show fallback
                         const parent = e.currentTarget.parentElement;
                         if (parent) {
                           parent.style.display = "flex";
@@ -478,7 +505,6 @@ function NewsFeed() {
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && visible.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 20px", color: C.secondary }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>📰</div>
@@ -672,17 +698,24 @@ function Footer() {
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
           <div style={{ display: "flex", gap: 10 }}>
-            {["𝕏", "in", "f", "▶"].map((icon, i) => (
-              <div key={i} style={{
-                width: 36, height: 36, borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, cursor: "pointer", color: C.white70, transition: "all 0.2s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}>
-                {icon}
-              </div>
+            {SOCIAL_LINKS.map((s) => (
+              <a
+                key={s.platform}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.platform}
+                style={{
+                  width: 36, height: 36, borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: C.white70, transition: "all 0.2s", textDecoration: "none",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.white; e.currentTarget.style.color = C.white; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.white70; }}
+              >
+                {s.icon}
+              </a>
             ))}
           </div>
           <div style={{ fontSize: 12, color: C.white70 }}>© 2026 Naija Election Watch. All rights reserved.</div>
