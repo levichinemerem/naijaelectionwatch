@@ -1,12 +1,12 @@
 import { generateBreadcrumbs } from "@/app/lib/breadcrumbs";
 
 type Props = {
-  pathname: string;
+  pathname?: string;          // optional — layout.tsx calls this without a pathname
   articleTitle?: string;
 };
 
 export default function BreadcrumbSchema({ pathname, articleTitle }: Props) {
-  if (!pathname) return null;
+  if (!pathname) return null;  // layout-level call with no pathname renders nothing
 
   const breadcrumbs = generateBreadcrumbs(pathname);
 
@@ -17,11 +17,11 @@ export default function BreadcrumbSchema({ pathname, articleTitle }: Props) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: breadcrumbs.map((item, index) => ({
+    itemListElement: breadcrumbs.map((crumb, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
-      item: item.url,
+      name: crumb.name,
+      item: crumb.url,
     })),
   };
 
