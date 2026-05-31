@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { supabaseAdmin } from "@/app/lib/supabase";
+export const revalidate = 3600; // re-generate every hour
 
 const BASE_URL = "https://www.naijaelectionwatch.com";
 
